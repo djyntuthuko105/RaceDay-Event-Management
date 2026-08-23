@@ -46,3 +46,37 @@
 | DELETE | `/api/event-types/{id}` | Removes an event type that is no longer required. | Organiser | None | **204 No Content** - Event type deleted successfully. **404 Not Found** - Event type does not exist. **409 Conflict** - Event type is being used by an event. |
 
 ---
+## 5. Locations
+
+| HTTP Method | Route | Description | Role Required | Request Body | Expected Response |
+|---|---|---|---|---|---|
+| GET | `/api/locations` | Retrieves available event locations. | Any authenticated user | None | **200 OK** - List of locations returned. **401 Unauthorized** - User is not authenticated. |
+| GET | `/api/locations/{id}` | Retrieves a specific event location. | Any authenticated user | None | **200 OK** - Location returned. **401 Unauthorized** - User is not authenticated. **404 Not Found** - Location does not exist. |
+| POST | `/api/locations` | Creates a new event location. | Organiser | `VenueName`, `AddressLine`, `City`, `Province`, `PostalCode`, `Latitude`, `Longitude` | **201 Created** - Location created successfully. **400 Bad Request** - Invalid location data. **401 Unauthorized** - User is not authenticated. **403 Forbidden** - User is not an Organiser. |
+| PUT | `/api/locations/{id}` | Updates an existing event location. | Organiser | `VenueName`, `AddressLine`, `City`, `Province`, `PostalCode`, `Latitude`, `Longitude` | **200 OK** - Location updated successfully. **400 Bad Request** - Invalid data. **403 Forbidden** - User is not an Organiser. **404 Not Found** - Location does not exist. |
+| DELETE | `/api/locations/{id}` | Deletes an unused event location. | Organiser | None | **204 No Content** - Location deleted successfully. **403 Forbidden** - User is not an Organiser. **404 Not Found** - Location does not exist. **409 Conflict** - Location is currently linked to an event. |
+
+---
+
+## 6. Categories
+
+| HTTP Method | Route | Description | Role Required | Request Body | Expected Response |
+|---|---|---|---|---|---|
+| GET | `/api/events/{eventId}/categories` | Retrieves all categories available for a specific event. | None | None | **200 OK** - Categories returned. **404 Not Found** - Event does not exist. |
+| GET | `/api/categories/{id}` | Retrieves a specific event category. | None | None | **200 OK** - Category returned. **404 Not Found** - Category does not exist. |
+| POST | `/api/events/{eventId}/categories` | Creates a new age or distance category for an event. | Organiser | `CategoryName`, `MinimumAge`, `MaximumAge`, `CategoryDistanceKm`, `MaximumParticipants` | **201 Created** - Category created successfully. **400 Bad Request** - Invalid category. **403 Forbidden** - Organiser does not own event. **404 Not Found** - Event does not exist. |
+| PUT | `/api/categories/{id}` | Updates an existing event category. | Organiser | `CategoryName`, `MinimumAge`, `MaximumAge`, `CategoryDistanceKm`, `MaximumParticipants` | **200 OK** - Category updated successfully. **400 Bad Request** - Invalid data. **403 Forbidden** - Organiser does not own event. **404 Not Found** - Category does not exist. |
+| DELETE | `/api/categories/{id}` | Removes a category from an event when it is no longer required. | Organiser | None | **204 No Content** - Category deleted successfully. **403 Forbidden** - Organiser does not own event. **404 Not Found** - Category does not exist. **409 Conflict** - Category has existing enrolments. |
+
+---
+
+## 7. Event Enrolments
+
+| HTTP Method | Route | Description | Role Required | Request Body | Expected Response |
+|---|---|---|---|---|---|
+| POST | `/api/events/{eventId}/enrolments` | Enrols the authenticated Participant into an event using a selected category. | Participant | `CategoryId` | **201 Created** - Enrolment created successfully. **400 Bad Request** - Invalid category. **403 Forbidden** - User is not a Participant. **404 Not Found** - Event or category does not exist. **409 Conflict** - Participant is already enrolled. |
+| GET | `/api/enrolments/me` | Retrieves all events the authenticated Participant has entered. | Participant | None | **200 OK** - Participant's enrolments returned. **401 Unauthorized** - User is not authenticated. **403 Forbidden** - User is not a Participant. |
+| GET | `/api/enrolments/{id}` | Retrieves details of a specific enrolment belonging to the authenticated Participant. | Participant | None | **200 OK** - Enrolment returned. **403 Forbidden** - Enrolment belongs to another user. **404 Not Found** - Enrolment does not exist. |
+| DELETE | `/api/enrolments/{id}` | Cancels an existing Participant enrolment where cancellation is allowed. | Participant | None | **204 No Content** - Enrolment cancelled successfully. **403 Forbidden** - Enrolment belongs to another user. **404 Not Found** - Enrolment does not exist. **409 Conflict** - Enrolment can no longer be cancelled. |
+
+---
