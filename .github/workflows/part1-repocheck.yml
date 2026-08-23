@@ -1,0 +1,73 @@
+name: Part 1 RepoCheck
+
+# This workflow runs whenever changes are pushed to the repository
+# or when a pull request is created
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate-part1:
+    name: Validate Part 1 Documents
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # Get the latest version of the repository
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Check that the required docs folder exists
+      - name: Check Docs Folder
+        run: |
+          if [ ! -d "docs" ]; then
+            echo "Error: docs folder was not found."
+            exit 1
+          fi
+
+          echo "Docs folder found."
+
+      # Check that the ERD exists
+      - name: Check ERD
+        run: |
+          if [ ! -f "docs/erd.png" ]; then
+            echo "Error: ERD file was not found."
+            exit 1
+          fi
+
+          echo "ERD found."
+
+      # Check that the API endpoint plan exists
+      - name: Check API Endpoint Plan
+        run: |
+          if [ ! -f "docs/api_endpoint_plan.md" ]; then
+            echo "Error: API endpoint plan was not found."
+            exit 1
+          fi
+
+          echo "API endpoint plan found."
+      # Check that the SQL database script exists
+      - name: Check SQL Database Script
+        run: |
+          if [ ! -f "docs/RaceDayDatabase.sql" ]; then
+            echo "Error: SQL database script was not found."
+            exit 1
+          fi
+
+          echo "SQL database script found."
+
+      # Check that the README exists
+      - name: Check README
+        run: |
+          if [ ! -f "README.md" ]; then
+            echo "Error: README.md was not found."
+            exit 1
+          fi
+
+          echo "README found."
+
+      # Display a final success message
+      - name: Validation Complete
+        run: |
+          echo "RaceDay Part 1 validation completed successfully."
+          echo "All required project files were found."
