@@ -48,3 +48,75 @@ RaceDay/
 ```
 
 ---
+## System Roles
+
+RaceDay has two main user roles.
+
+### Organiser
+
+An Organiser is responsible for managing events on the RaceDay platform.
+
+Organisers will be able to:
+
+- Create events
+- Edit events
+- Delete events
+- Manage event categories
+- View participant enrolments for their events
+- Capture participant results
+
+
+
+### Participant
+
+A Participant uses RaceDay to find and enter events.
+
+Participants will be able to:
+
+- Create an account
+- Browse available events
+- View event information
+- Select an event category
+- Enter an event
+- View their own enrolments
+- Track their personal race results
+
+Role-based access will be enforced at the API level in Part 2 and reflected in the MVC application in Part 3.
+
+---
+
+
+
+## Entity Relationship Diagram
+
+The ERD represents the database structure planned for the RaceDay system.
+
+The current ERD contains the following entities:
+
+- Users
+- EventTypes
+- Locations
+- Events
+- Categories
+- Enrolments
+- Results
+- EventImages
+- WeatherSnapshots
+
+The ERD shows:
+
+- Primary keys
+- Foreign keys
+- Entity attributes
+- Relationships between entities
+- Relationship cardinality
+
+The ERD is stored in:
+
+```text
+docs/erd.png
+```
+
+The database structure shown in the ERD is designed to support the RaceDay requirements while allowing the system to be expanded during Parts 2 and 3.
+
+---
