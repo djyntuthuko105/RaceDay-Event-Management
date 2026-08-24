@@ -175,3 +175,44 @@ CREATE TABLE WeatherSnapshots
     CONSTRAINT CK_Weather_Humidity
     CHECK (HumidityPercentage BETWEEN 0 AND 100)
 );
+-- SAMPLE DATA
+-- Event Types
+
+INSERT INTO EventTypes
+(TypeName, Description)
+VALUES
+('Run', 'Running events'),
+('Walk', 'Walking events'),
+('Cycle', 'Cycling events');
+-- Locations
+
+INSERT INTO Locations
+(VenueName, AddressLine, City, Province, PostalCode, Latitude, Longitude)
+VALUES
+(
+    'Pretoria National Botanical Garden',
+    '2 Cussonia Avenue',
+    'Pretoria',
+    'Gauteng',
+    '0001',
+    -25.738000,
+    28.267000
+),
+(
+    'Loch Logan Waterfront',
+    'Waterfront Road',
+    'Bloemfontein',
+    'Free State',
+    '9301',
+    -29.118000,
+    26.215000
+),
+(
+    'Durban Beachfront',
+    'Snell Parade',
+    'Durban',
+    'KwaZulu-Natal',
+    '4001',
+    -29.858700,
+    31.021800
+);
