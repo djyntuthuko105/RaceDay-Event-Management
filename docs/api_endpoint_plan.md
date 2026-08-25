@@ -80,3 +80,14 @@
 | DELETE | `/api/enrolments/{id}` | Cancels an existing Participant enrolment where cancellation is allowed. | Participant | None | **204 No Content** - Enrolment cancelled successfully. **403 Forbidden** - Enrolment belongs to another user. **404 Not Found** - Enrolment does not exist. **409 Conflict** - Enrolment can no longer be cancelled. |
 
 ---
+## 8. Results
+
+| HTTP Method | Route | Description | Role Required | Request Body | Expected Response |
+|---|---|---|---|---|---|
+| POST | `/api/enrolments/{enrolmentId}/result` | Records the finish time and finishing position for a Participant after an event. | Organiser | `FinishTime`, `FinishPosition` | **201 Created** - Result recorded successfully. **400 Bad Request** - Invalid result. **403 Forbidden** - Organiser does not own event. **404 Not Found** - Enrolment does not exist. **409 Conflict** - Result already exists. |
+| GET | `/api/results/me` | Retrieves the authenticated Participant's complete race history. | Participant | None | **200 OK** - Personal results returned. **401 Unauthorized** - User is not authenticated. **403 Forbidden** - User is not a Participant. |
+| GET | `/api/results/{id}` | Retrieves a specific race result belonging to the authenticated Participant. | Participant | None | **200 OK** - Result returned. **403 Forbidden** - Result belongs to another Participant. **404 Not Found** - Result does not exist. |
+| GET | `/api/events/{eventId}/results` | Retrieves the results recorded for an event. | Organiser | None | **200 OK** - Event results returned. **403 Forbidden** - Organiser does not own event. **404 Not Found** - Event does not exist. |
+| PUT | `/api/results/{id}` | Corrects or updates an existing Participant result. | Organiser | `FinishTime`, `FinishPosition` | **200 OK** - Result updated successfully. **400 Bad Request** - Invalid result. **403 Forbidden** - Organiser does not own event. **404 Not Found** - Result does not exist. |
+
+---
