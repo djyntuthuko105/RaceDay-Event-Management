@@ -91,3 +91,12 @@
 | PUT | `/api/results/{id}` | Corrects or updates an existing Participant result. | Organiser | `FinishTime`, `FinishPosition` | **200 OK** - Result updated successfully. **400 Bad Request** - Invalid result. **403 Forbidden** - Organiser does not own event. **404 Not Found** - Result does not exist. |
 
 ---
+## 9. Event Images
+
+| HTTP Method | Route | Description | Role Required | Request Body | Expected Response |
+|---|---|---|---|---|---|
+| GET | `/api/events/{eventId}/images` | Retrieves images associated with an event. | None | None | **200 OK** - Event images returned. **404 Not Found** - Event does not exist. |
+| POST | `/api/events/{eventId}/images` | Uploads an event image through the API and stores its image URL information. | Organiser | `Image file` | **201 Created** - Image uploaded successfully. **400 Bad Request** - Invalid file. **403 Forbidden** - Organiser does not own event. **404 Not Found** - Event does not exist. |
+| DELETE | `/api/event-images/{id}` | Removes an event image from an event. | Organiser | None | **204 No Content** - Image removed successfully. **403 Forbidden** - Organiser does not own event. **404 Not Found** - Image does not exist. |
+
+---
