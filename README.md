@@ -120,3 +120,87 @@ docs/erd.png
 The database structure shown in the ERD is designed to support the RaceDay requirements while allowing the system to be expanded during Parts 2 and 3.
 
 ---
+## API Endpoint Plan
+
+The API Endpoint Plan defines the RESTful API that will be developed in Part 2.
+
+The endpoint plan is created before API development so that the implementation can follow the planned design.
+
+The plan includes:
+
+- HTTP Method
+- Route
+- Description
+- Role Required
+- Request Body
+- Expected Response
+
+The planned API covers the required RaceDay functionality, including:
+
+- Authentication
+- User Profile
+- Events
+- Categories
+- Event Enrolments
+- Results
+
+The endpoint plan is stored in:
+
+```text
+docs/api_endpoint_plan.md
+```
+
+---
+
+
+
+## SQL Database
+
+The SQL script creates and populates the RaceDay database using Microsoft SQL Server.
+
+The script includes:
+
+- Database creation
+- Table creation
+- Primary keys
+- Foreign keys
+- NOT NULL constraints
+- UNIQUE constraints
+- DEFAULT constraints
+- CHECK constraints
+- Sample data
+
+The database contains the following entities:
+
+
+| Table            | Purpose                                        |
+| ---------------- | ---------------------------------------------- |
+| Users            | Stores Organiser and Participant information   |
+| EventTypes       | Stores event types such as Run, Walk and Cycle |
+| Locations        | Stores event location information              |
+| Events           | Stores RaceDay event information               |
+| Categories       | Stores categories for each event               |
+| Enrolments       | Links Participants to events and categories    |
+| Results          | Stores participant finish times and positions  |
+| EventImages      | Stores event image information                 |
+| WeatherSnapshots | Stores weather information related to events   |
+
+
+The SQL script includes sample data for:
+
+- 2 Organisers
+- 2 Participants
+- 3 Events
+- Event categories
+- Sample enrolments
+- Sample results
+- Event images
+- Weather information
+
+The SQL script is stored in:
+
+```text
+docs/RaceDayDatabase.sql
+```
+
+---
