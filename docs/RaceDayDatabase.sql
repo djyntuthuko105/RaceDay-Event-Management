@@ -216,3 +216,82 @@ VALUES
     -29.858700,
     31.021800
 );
+-- Users
+INSERT INTO Users
+(FirstName, LastName, Email, PasswordHash, PhoneNumber, Role)
+VALUES
+(
+    'Thabo',
+    'Mokoena',
+    'thabo@raceday.co.za',
+    'password_hash_1',
+    '0825550101',
+    'Organiser'
+),
+(
+    'Naledi',
+    'Dlamini',
+    'naledi@raceday.co.za',
+    'password_hash_2',
+    '0835550102',
+    'Organiser'
+),
+(
+    'Kabelo',
+    'Molefe',
+    'kabelo@example.com',
+    'password_hash_3',
+    '0845550103',
+    'Participant'
+),
+(
+    'Lerato',
+    'Mokoena',
+    'lerato@example.com',
+    'password_hash_4',
+    '0855550104',
+    'Participant'
+);
+-- Events
+INSERT INTO Events
+(
+    OrganiserId,
+    EventTypeId,
+    LocationId,
+    EventName,
+    Description,
+    EventDate,
+    DistanceKm,
+    RegistrationDeadline
+)
+VALUES
+(
+    1,
+    1,
+    1,
+    'Pretoria City Run',
+    'A community running event in Pretoria.',
+    '2026-10-10',
+    10.00,
+    '2026-10-03'
+),
+(
+    2,
+    2,
+    2,
+    'Bloemfontein Family Walk',
+    'A family friendly walking event.',
+    '2026-11-07',
+    5.00,
+    '2026-10-31'
+),
+(
+    1,
+    3,
+    3,
+    'Durban Coastal Cycle',
+    'A cycling event along the Durban coastline.',
+    '2026-12-05',
+    40.00,
+    '2026-11-28'
+);
