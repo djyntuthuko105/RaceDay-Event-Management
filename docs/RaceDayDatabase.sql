@@ -295,3 +295,36 @@ VALUES
     40.00,
     '2026-11-28'
 );
+-- Categories
+
+INSERT INTO Categories
+(
+    EventId,
+    CategoryName,
+    MinimumAge,
+    MaximumAge,
+    CategoryDistanceKm,
+    MaximumParticipants
+)
+VALUES
+(1, 'Open 10 km', 18, 60, 10.00, 500),
+(1, 'Junior 5 km', 13, 17, 5.00, 250),
+
+(2, 'Family 5 km', 8, 70, 5.00, 400),
+(2, 'Senior Walk', 60, NULL, 5.00, 150),
+
+(3, 'Open 40 km Cycle', 18, 65, 40.00, 300),
+(3, 'Junior 20 km Cycle', 14, 17, 20.00, 150);
+-- Enrolments
+INSERT INTO Enrolments
+(
+    ParticipantId,
+    EventId,
+    CategoryId,
+    Status
+)
+VALUES
+(3, 1, 1, 'Confirmed'),
+(4, 1, 1, 'Confirmed'),
+(3, 2, 3, 'Pending'),
+(4, 3, 5, 'Confirmed');
