@@ -328,3 +328,38 @@ VALUES
 (4, 1, 1, 'Confirmed'),
 (3, 2, 3, 'Pending'),
 (4, 3, 5, 'Confirmed');
+-- Weather Snapshots
+INSERT INTO WeatherSnapshots
+(
+    EventId,
+    TemperatureCelsius,
+    FeelsLikeCelsius,
+    WeatherCondition,
+    WindSpeedKmh,
+    HumidityPercentage
+)
+VALUES
+(
+    1,
+    22.5,
+    22.8,
+    'Partly Cloudy',
+    12.5,
+    58
+),
+(
+    2,
+    19.8,
+    19.2,
+    'Clear',
+    8.2,
+    48
+),
+(
+    3,
+    25.4,
+    27.1,
+    'Sunny',
+    15.8,
+    67
+);
