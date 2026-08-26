@@ -100,3 +100,40 @@
 | DELETE | `/api/event-images/{id}` | Removes an event image from an event. | Organiser | None | **204 No Content** - Image removed successfully. **403 Forbidden** - Organiser does not own event. **404 Not Found** - Image does not exist. |
 
 ---
+## 10. Weather Snapshots
+
+| HTTP Method | Route | Description | Role Required | Request Body | Expected Response |
+|---|---|---|---|---|---|
+| GET | `/api/events/{eventId}/weather` | Retrieves weather information associated with an event. | None | None | **200 OK** - Weather information returned. **404 Not Found** - Event does not exist. |
+| POST | `/api/events/{eventId}/weather` | Stores a weather snapshot associated with an event. | Organiser | `TemperatureCelsius`, `FeelsLikeCelsius`, `WeatherCondition`, `WindSpeedKmh`, `HumidityPercentage`, `RecordedAt` | **201 Created** - Weather snapshot stored successfully. **400 Bad Request** - Invalid weather data. **403 Forbidden** - User is not an Organiser. **404 Not Found** - Event does not exist. |
+| GET | `/api/weather/{id}` | Retrieves a specific weather snapshot. | None | None | **200 OK** - Weather snapshot returned. **404 Not Found** - Weather snapshot does not exist. |
+
+---
+
+# API Design Rules
+
+## Authentication and Sessions
+
+- Users must authenticate before accessing protected endpoints.
+- The server must maintain the authenticated user's session.
+- The user's ID and role must be available to protected endpoints.
+- Participants must not access Organiser-only operations.
+- Organisers must not perform Participant-only enrolment operations.
+- Users must only be allowed to access resources they are authorised to manage.
+
+## Role Permissions
+
+### Organiser
+
+Organisers can:
+
+- Create events.
+- Update their own events.
+- Delete their own events.
+- Create and manage event categories.
+- Manage event locations.
+- Record participant results.
+- Update participant results.
+- View enrolments for their own events.
+- Manage event images.
+- Manage event-related weather information.
