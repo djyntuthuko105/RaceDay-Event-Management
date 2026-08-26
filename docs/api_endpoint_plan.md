@@ -137,3 +137,41 @@ Organisers can:
 - View enrolments for their own events.
 - Manage event images.
 - Manage event-related weather information.
+### Participant
+
+Participants can:
+
+- Browse events.
+- View event details.
+- View event categories.
+- Enrol in events.
+- View their own enrolments.
+- Cancel eligible enrolments.
+- View their own results.
+- View event images.
+- View weather information.
+
+## Public Access
+
+The following resources can be viewed without authentication:
+
+- Event listings.
+- Individual event details.
+- Event categories.
+- Event images.
+- Event weather information.
+
+## Common HTTP Status Codes
+
+| Status Code | Meaning | Typical Use |
+|---|---|---|
+| 200 OK | Request completed successfully. | GET, PUT, successful operations that return data |
+| 201 Created | New resource created successfully. | POST |
+| 204 No Content | Request completed successfully without returning data. | DELETE |
+| 400 Bad Request | Request contains invalid data. | Invalid request body or validation failure |
+| 401 Unauthorized | User is not authenticated. | Missing or invalid session |
+| 403 Forbidden | User is authenticated but does not have permission. | Wrong role or accessing another user's resource |
+| 404 Not Found | Requested resource does not exist. | Invalid ID |
+| 409 Conflict | Request conflicts with existing data or business rules. | Duplicate email, duplicate enrolment, existing result |
+
+---
