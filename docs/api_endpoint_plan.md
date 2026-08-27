@@ -175,3 +175,43 @@ The following resources can be viewed without authentication:
 | 409 Conflict | Request conflicts with existing data or business rules. | Duplicate email, duplicate enrolment, existing result |
 
 ---
+# API Resource Summary
+
+| Resource | Main Purpose |
+|---|---|
+| Authentication | Registration, login, logout and session management |
+| Users | User profile management |
+| Events | RaceDay event management and discovery |
+| Event Types | Run, Walk and Cycle event types |
+| Locations | Event venue and location information |
+| Categories | Age and distance categories |
+| Enrolments | Participant registration for events |
+| Results | Race finishing times and positions |
+| Event Images | Event banner and image management |
+| Weather Snapshots | Event weather information |
+
+---
+
+# Total Planned Endpoints
+
+| Resource | Number of Endpoints |
+|---|---:|
+| Authentication | 4 |
+| User Profile | 3 |
+| Events | 6 |
+| Event Types | 5 |
+| Locations | 5 |
+| Categories | 5 |
+| Enrolments | 4 |
+| Results | 5 |
+| Event Images | 3 |
+| Weather Snapshots | 3 |
+| **Total** | **43** |
+
+---
+
+# API Design Objective
+
+The RaceDay REST API is designed to provide a clear separation between the client application, business logic and database. The endpoint structure supports the required Organiser and Participant roles while protecting resources through authentication and authorisation.
+
+The API plan will serve as the specification for the ASP.NET Core Web API implementation in Part 2. The implemented endpoints should follow the routes, HTTP methods, request structures, role requirements and expected responses defined in this document.

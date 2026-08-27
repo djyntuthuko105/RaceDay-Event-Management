@@ -204,3 +204,55 @@ docs/RaceDayDatabase.sql
 ```
 
 ---
+## Running the Database
+
+The SQL database can be created using Microsoft SQL Server Management Studio (SSMS).
+
+### Requirements
+
+The following software is required:
+
+- Microsoft SQL Server
+- SQL Server Management Studio (SSMS)
+
+
+
+### Steps
+
+1. Open SQL Server Management Studio.
+2. Connect to your SQL Server instance.
+3. Open the following file:
+  ```text
+   docs/RaceDayDatabase.sql
+  ```
+4. Run the complete SQL script.
+5. The `RaceDayDB` database will be created.
+6. The database tables and sample data will be inserted.
+
+The database can then be viewed in SQL Server Management Studio under:
+
+```text
+Databases
+└── RaceDayDB
+```
+
+---
+
+
+
+## Part 1 Testing
+
+The SQL script will be tested on a clean SQL Server database before submission.
+
+The test will confirm that:
+
+- The database is created successfully.
+- All tables are created successfully.
+- Primary keys are created.
+- Foreign keys are created.
+- Required constraints are created.
+- Sample data is inserted successfully.
+- Relationships between the tables work correctly.
+- The script runs without errors.
+
+---
