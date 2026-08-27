@@ -363,3 +363,21 @@ VALUES
     15.8,
     67
 );
+-- Basic Testin
+SELECT * FROM Users;
+
+SELECT * FROM EventTypes;
+
+SELECT * FROM Locations;
+
+SELECT * FROM Events;
+
+SELECT * FROM Categories;
+
+SELECT * FROM Enrolments;
+
+SELECT * FROM Results;
+
+SELECT * FROM EventImages;
+
+SELECT * FROM WeatherSnapshots;
