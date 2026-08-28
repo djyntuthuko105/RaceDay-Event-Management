@@ -2,96 +2,74 @@
 
 RaceDay is a web-based event management system designed for the South African road running, walking and cycling community.
 
-The system is designed to help Event Organisers manage sporting events while allowing Participants to browse events, register for events, select categories and track their race results.
-
-RaceDay is being developed as a three-part Portfolio of Evidence project:
-
-- Part 1 - System Planning and Database
-- Part 2 - RESTful API Development
-- Part 3 - MVC Web Application
-
-Each part builds on the previous part. The planning completed in Part 1 will be used as the foundation for the RESTful API in Part 2 and the MVC web application in Part 3.
+The system allows Event Organisers to manage sporting events, categories, participant enrolments and results. Participants can browse events, select categories, enrol for events and track their results.
 
 ---
 
+## System Roles
 
+### Organiser
 
-## Part 1 - System Planning and Database
+Organisers can:
 
-Part 1 focuses on planning the RaceDay system before application code is developed.
+- Create events
+- Edit events
+- Delete events
+- Manage event categories
+- View participant enrolments
+- Capture participant results
 
-The three main deliverables for Part 1 are:
+### Participant
 
-1. Entity Relationship Diagram (ERD)
-2. REST API Endpoint Plan
-3. SQL Database Script
+Participants can:
 
-All three planning documents are stored inside the `docs` folder.
+- Create an account
+- Browse available events
+- View event information
+- Select an event category
+- Enrol for events
+- View their enrolments
+- View their race results
 
 ---
-
-
 
 ## Repository Structure
 
-The current repository structure is:
-
 ```text
-RaceDay/
+RaceDay-Event-Management/
+│
+├── .github/
+│   └── workflows/
+│       └── part1-repocheck.yml
 │
 ├── docs/
 │   ├── api_endpoint_plan.md
 │   ├── erd.png
 │   └── RaceDayDatabase.sql
 │
+├── CI.png
 └── README.md
 ```
 
 ---
-## System Roles
 
-RaceDay has two main user roles.
+## Part 1 - System Planning and Database
 
-### Organiser
+Part 1 contains the planning and database components for the RaceDay system.
 
-An Organiser is responsible for managing events on the RaceDay platform.
+The following deliverables have been completed:
 
-Organisers will be able to:
-
-- Create events
-- Edit events
-- Delete events
-- Manage event categories
-- View participant enrolments for their events
-- Capture participant results
-
-
-
-### Participant
-
-A Participant uses RaceDay to find and enter events.
-
-Participants will be able to:
-
-- Create an account
-- Browse available events
-- View event information
-- Select an event category
-- Enter an event
-- View their own enrolments
-- Track their personal race results
-
-Role-based access will be enforced at the API level in Part 2 and reflected in the MVC application in Part 3.
+- Entity Relationship Diagram (ERD)
+- REST API Endpoint Plan
+- SQL Database Script
+- GitHub repository setup
+- GitHub Actions validation workflow
 
 ---
 
-
-
 ## Entity Relationship Diagram
 
-The ERD represents the database structure planned for the RaceDay system.
-
-The current ERD contains the following entities:
+The RaceDay database contains the following entities:
 
 - Users
 - EventTypes
@@ -103,28 +81,19 @@ The current ERD contains the following entities:
 - EventImages
 - WeatherSnapshots
 
-The ERD shows:
+The ERD includes the entity attributes, primary keys, foreign keys and relationships between the entities.
 
-- Primary keys
-- Foreign keys
-- Entity attributes
-- Relationships between entities
-- Relationship cardinality
-
-The ERD is stored in:
+The completed ERD is available at:
 
 ```text
 docs/erd.png
 ```
 
-The database structure shown in the ERD is designed to support the RaceDay requirements while allowing the system to be expanded during Parts 2 and 3.
-
 ---
+
 ## API Endpoint Plan
 
-The API Endpoint Plan defines the RESTful API that will be developed in Part 2.
-
-The endpoint plan is created before API development so that the implementation can follow the planned design.
+The API Endpoint Plan defines the REST API for the RaceDay system.
 
 The plan includes:
 
@@ -135,16 +104,9 @@ The plan includes:
 - Request Body
 - Expected Response
 
-The planned API covers the required RaceDay functionality, including:
+The endpoint plan covers the main system functionality, including authentication, user profiles, events, categories, enrolments and results.
 
-- Authentication
-- User Profile
-- Events
-- Categories
-- Event Enrolments
-- Results
-
-The endpoint plan is stored in:
+The completed API Endpoint Plan is available at:
 
 ```text
 docs/api_endpoint_plan.md
@@ -152,13 +114,11 @@ docs/api_endpoint_plan.md
 
 ---
 
-
-
 ## SQL Database
 
-The SQL script creates and populates the RaceDay database using Microsoft SQL Server.
+The RaceDay database was created using Microsoft SQL Server.
 
-The script includes:
+The SQL script contains:
 
 - Database creation
 - Table creation
@@ -170,66 +130,61 @@ The script includes:
 - CHECK constraints
 - Sample data
 
-The database contains the following entities:
+The database contains the following tables:
 
+| Table | Purpose |
+|---|---|
+| Users | Stores Organiser and Participant information |
+| EventTypes | Stores event types such as Run, Walk and Cycle |
+| Locations | Stores event location information |
+| Events | Stores RaceDay event information |
+| Categories | Stores categories for each event |
+| Enrolments | Links Participants to events and categories |
+| Results | Stores participant finish times and positions |
+| EventImages | Stores event image information |
+| WeatherSnapshots | Stores weather information related to events |
 
-| Table            | Purpose                                        |
-| ---------------- | ---------------------------------------------- |
-| Users            | Stores Organiser and Participant information   |
-| EventTypes       | Stores event types such as Run, Walk and Cycle |
-| Locations        | Stores event location information              |
-| Events           | Stores RaceDay event information               |
-| Categories       | Stores categories for each event               |
-| Enrolments       | Links Participants to events and categories    |
-| Results          | Stores participant finish times and positions  |
-| EventImages      | Stores event image information                 |
-| WeatherSnapshots | Stores weather information related to events   |
-
-
-The SQL script includes sample data for:
+The database includes sample data for:
 
 - 2 Organisers
 - 2 Participants
 - 3 Events
-- Event categories
+- Categories for each event
 - Sample enrolments
 - Sample results
 - Event images
 - Weather information
 
-The SQL script is stored in:
+The completed SQL script is available at:
 
 ```text
 docs/RaceDayDatabase.sql
 ```
 
 ---
+
 ## Running the Database
 
-The SQL database can be created using Microsoft SQL Server Management Studio (SSMS).
+The database script can be executed using Microsoft SQL Server Management Studio (SSMS).
 
 ### Requirements
-
-The following software is required:
 
 - Microsoft SQL Server
 - SQL Server Management Studio (SSMS)
 
-
-
 ### Steps
 
 1. Open SQL Server Management Studio.
-2. Connect to your SQL Server instance.
-3. Open the following file:
-  ```text
+2. Connect to a SQL Server instance.
+3. Open:
+   ```text
    docs/RaceDayDatabase.sql
-  ```
-4. Run the complete SQL script.
+   ```
+4. Execute the complete script.
 5. The `RaceDayDB` database will be created.
-6. The database tables and sample data will be inserted.
+6. The tables and sample data will be inserted.
 
-The database can then be viewed in SQL Server Management Studio under:
+The completed database can be viewed under:
 
 ```text
 Databases
@@ -238,21 +193,69 @@ Databases
 
 ---
 
+## GitHub and Version Control
 
+GitHub is used to manage the RaceDay project and track development progress.
 
-## Part 1 Testing
+Part 1 was developed using meaningful commits that represent changes made to the project.
 
-The SQL script will be tested on a clean SQL Server database before submission.
+The repository contains more than 20 meaningful commits covering areas such as:
 
-The test will confirm that:
-
-- The database is created successfully.
-- All tables are created successfully.
-- Primary keys are created.
-- Foreign keys are created.
-- Required constraints are created.
-- Sample data is inserted successfully.
-- Relationships between the tables work correctly.
-- The script runs without errors.
+- ERD development
+- Database development
+- API endpoint planning
+- Database relationships
+- Constraints
+- Sample data
+- Repository configuration
+- GitHub Actions
 
 ---
+
+## GitHub Actions
+
+GitHub Actions is used to validate the Part 1 repository structure.
+
+The workflow checks that the required documentation files are present:
+
+```text
+docs/
+├── api_endpoint_plan.md
+├── erd.png
+└── RaceDayDatabase.sql
+```
+
+The workflow is located at:
+
+```text
+.github/workflows/part1-repocheck.yml
+```
+
+The workflow completed successfully and produced a green build.
+
+### CI/CD Build
+
+<img src="CI.png" height="600px" width="800px"/>
+
+---
+
+## Project Status
+
+| Part 1 Component | Status |
+|---|---|
+| ERD | Complete |
+| API Endpoint Plan | Complete |
+| SQL Database Script | Complete |
+| Repository Structure | Complete |
+| GitHub Actions Workflow | Complete |
+| CI/CD Validation | Complete |
+
+---
+
+## Conclusion
+
+RaceDay Part 1 has been completed with the required system planning, database design and repository setup.
+
+The ERD, API Endpoint Plan and SQL Database Script provide the foundation for the RaceDay system and are stored together in the `docs` folder.
+
+GitHub is used for version control, while GitHub Actions provides automated validation of the required Part 1 repository structure.
