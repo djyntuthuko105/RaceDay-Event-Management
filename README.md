@@ -33,6 +33,8 @@ Participants can:
 
 ---
 
+
+
 ## Repository Structure
 
 ```text
@@ -53,6 +55,8 @@ RaceDay-Event-Management/
 
 ---
 
+
+
 ## Part 1 - System Planning and Database
 
 Part 1 contains the planning and database components for the RaceDay system.
@@ -66,6 +70,8 @@ The following deliverables have been completed:
 - GitHub Actions validation workflow
 
 ---
+
+
 
 ## Entity Relationship Diagram
 
@@ -83,13 +89,16 @@ The RaceDay database contains the following entities:
 
 The ERD includes the entity attributes, primary keys, foreign keys and relationships between the entities.
 
-The completed ERD is available at:
 
-```text
-docs/erd.png
-```
+**Below is the RaceDay ERD:**
+
+
+
+![](docs/erd.png)
 
 ---
+
+
 
 ## API Endpoint Plan
 
@@ -114,6 +123,8 @@ docs/api_endpoint_plan.md
 
 ---
 
+
+
 ## SQL Database
 
 The RaceDay database was created using Microsoft SQL Server.
@@ -132,17 +143,19 @@ The SQL script contains:
 
 The database contains the following tables:
 
-| Table | Purpose |
-|---|---|
-| Users | Stores Organiser and Participant information |
-| EventTypes | Stores event types such as Run, Walk and Cycle |
-| Locations | Stores event location information |
-| Events | Stores RaceDay event information |
-| Categories | Stores categories for each event |
-| Enrolments | Links Participants to events and categories |
-| Results | Stores participant finish times and positions |
-| EventImages | Stores event image information |
-| WeatherSnapshots | Stores weather information related to events |
+
+| Table            | Purpose                                        |
+| ---------------- | ---------------------------------------------- |
+| Users            | Stores Organiser and Participant information   |
+| EventTypes       | Stores event types such as Run, Walk and Cycle |
+| Locations        | Stores event location information              |
+| Events           | Stores RaceDay event information               |
+| Categories       | Stores categories for each event               |
+| Enrolments       | Links Participants to events and categories    |
+| Results          | Stores participant finish times and positions  |
+| EventImages      | Stores event image information                 |
+| WeatherSnapshots | Stores weather information related to events   |
+
 
 The database includes sample data for:
 
@@ -163,6 +176,8 @@ docs/RaceDayDatabase.sql
 
 ---
 
+
+
 ## Running the Database
 
 The database script can be executed using Microsoft SQL Server Management Studio (SSMS).
@@ -172,14 +187,16 @@ The database script can be executed using Microsoft SQL Server Management Studio
 - Microsoft SQL Server
 - SQL Server Management Studio (SSMS)
 
+
+
 ### Steps
 
 1. Open SQL Server Management Studio.
 2. Connect to a SQL Server instance.
 3. Open:
-   ```text
+  ```text
    docs/RaceDayDatabase.sql
-   ```
+  ```
 4. Execute the complete script.
 5. The `RaceDayDB` database will be created.
 6. The tables and sample data will be inserted.
@@ -193,11 +210,11 @@ Databases
 
 ---
 
+
+
 ## GitHub and Version Control
 
 GitHub is used to manage the RaceDay project and track development progress.
-
-Part 1 was developed using meaningful commits that represent changes made to the project.
 
 The repository contains more than 20 meaningful commits covering areas such as:
 
@@ -211,6 +228,8 @@ The repository contains more than 20 meaningful commits covering areas such as:
 - GitHub Actions
 
 ---
+
+
 
 ## GitHub Actions
 
@@ -235,22 +254,28 @@ The workflow completed successfully and produced a green build.
 
 ### CI/CD Build
 
-<img src="CI.png" height="600px" width="800px"/>
+![](docs/CI.png)
 
 ---
+
+
 
 ## Project Status
 
-| Part 1 Component | Status |
-|---|---|
-| ERD | Complete |
-| API Endpoint Plan | Complete |
-| SQL Database Script | Complete |
-| Repository Structure | Complete |
+
+| Part 1 Component        | Status   |
+| ----------------------- | -------- |
+| ERD                     | Complete |
+| API Endpoint Plan       | Complete |
+| SQL Database Script     | Complete |
+| Repository Structure    | Complete |
 | GitHub Actions Workflow | Complete |
-| CI/CD Validation | Complete |
+| CI/CD Validation        | Complete |
+
 
 ---
+
+
 
 ## Conclusion
 
