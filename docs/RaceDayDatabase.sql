@@ -1,10 +1,22 @@
 -- RaceDay Database
--- Create the database
+
+USE master;
+GO
+
+-- Drop the database if it already exists
+IF DB_ID('RaceDayDB') IS NOT NULL
+BEGIN
+    ALTER DATABASE RaceDayDB SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE RaceDayDB;
+END
+GO
+
 CREATE DATABASE RaceDayDB;
 GO
 
 USE RaceDayDB;
 GO
+
 -- 1. Users
 -- Stores Organisers and Participants
 
@@ -23,6 +35,8 @@ CREATE TABLE Users
     CONSTRAINT CK_Users_Role
     CHECK (Role IN ('Organiser', 'Participant'))
 );
+GO
+
 -- 2. EventTypes
 -- Stores the type of race event
 
@@ -32,6 +46,8 @@ CREATE TABLE EventTypes
     TypeName VARCHAR(30) NOT NULL UNIQUE,
     Description VARCHAR(255)
 );
+GO
+
 -- 3. Locations
 -- Stores event locations
 
@@ -46,6 +62,8 @@ CREATE TABLE Locations
     Latitude DECIMAL(9,6),
     Longitude DECIMAL(9,6)
 );
+GO
+
 -- 4. Events
 -- Stores RaceDay events
 
@@ -74,6 +92,8 @@ CREATE TABLE Events
     CONSTRAINT CK_Events_Distance
     CHECK (DistanceKm > 0)
 );
+GO
+
 -- 5. Categories
 -- Stores categories for each event
 
@@ -99,6 +119,8 @@ CREATE TABLE Categories
     CONSTRAINT CK_Categories_Participants
     CHECK (MaximumParticipants IS NULL OR MaximumParticipants > 0)
 );
+GO
+
 -- 6. Enrolments
 -- Connects Participants to Events
 CREATE TABLE Enrolments
@@ -126,6 +148,8 @@ CREATE TABLE Enrolments
     CONSTRAINT UQ_Enrolment
     UNIQUE (ParticipantId, EventId)
 );
+GO
+
 -- 7. Results
 -- Stores participant race results
 CREATE TABLE Results
@@ -142,6 +166,8 @@ CREATE TABLE Results
     CONSTRAINT CK_Results_Position
     CHECK (FinishPosition > 0)
 );
+GO
+
 -- 8. EventImages
 -- Stores images for event
 
@@ -156,6 +182,8 @@ CREATE TABLE EventImages
     FOREIGN KEY (EventId)
         REFERENCES Events(EventId)
 );
+GO
+
 -- 9. WeatherSnapshots
 -- Stores weather information for events
 CREATE TABLE WeatherSnapshots
@@ -175,17 +203,20 @@ CREATE TABLE WeatherSnapshots
     CONSTRAINT CK_Weather_Humidity
     CHECK (HumidityPercentage BETWEEN 0 AND 100)
 );
--- SAMPLE DATA
--- Event Types
+GO
 
+-- SAMPLE DATA
+
+-- Event Types
 INSERT INTO EventTypes
 (TypeName, Description)
 VALUES
 ('Run', 'Running events'),
 ('Walk', 'Walking events'),
 ('Cycle', 'Cycling events');
--- Locations
+GO
 
+-- Locations
 INSERT INTO Locations
 (VenueName, AddressLine, City, Province, PostalCode, Latitude, Longitude)
 VALUES
@@ -216,6 +247,8 @@ VALUES
     -29.858700,
     31.021800
 );
+GO
+
 -- Users
 INSERT INTO Users
 (FirstName, LastName, Email, PasswordHash, PhoneNumber, Role)
@@ -252,6 +285,8 @@ VALUES
     '0855550104',
     'Participant'
 );
+GO
+
 -- Events
 INSERT INTO Events
 (
@@ -295,8 +330,9 @@ VALUES
     40.00,
     '2026-11-28'
 );
--- Categories
+GO
 
+-- Categories
 INSERT INTO Categories
 (
     EventId,
@@ -315,6 +351,8 @@ VALUES
 
 (3, 'Open 40 km Cycle', 18, 65, 40.00, 300),
 (3, 'Junior 20 km Cycle', 14, 17, 20.00, 150);
+GO
+
 -- Enrolments
 INSERT INTO Enrolments
 (
@@ -328,6 +366,8 @@ VALUES
 (4, 1, 1, 'Confirmed'),
 (3, 2, 3, 'Pending'),
 (4, 3, 5, 'Confirmed');
+GO
+
 -- Weather Snapshots
 INSERT INTO WeatherSnapshots
 (
@@ -363,21 +403,15 @@ VALUES
     15.8,
     67
 );
--- Basic Testin
+GO
+
+-- Basic Testing
 SELECT * FROM Users;
-
 SELECT * FROM EventTypes;
-
 SELECT * FROM Locations;
-
 SELECT * FROM Events;
-
 SELECT * FROM Categories;
-
 SELECT * FROM Enrolments;
-
 SELECT * FROM Results;
-
 SELECT * FROM EventImages;
-
 SELECT * FROM WeatherSnapshots;
