@@ -47,9 +47,9 @@ RaceDay-Event-Management/
 ├── docs/
 │   ├── api_endpoint_plan.md
 │   ├── erd.png
-│   └── RaceDayDatabase.sql
+│   ├── RaceDayDatabase.sql
+│   └── CI.png
 │
-├── CI.png
 └── README.md
 ```
 
