@@ -1,6 +1,33 @@
-@RaceDay_Event_Management.API_HostAddress = http://localhost:5264
+@RaceDay_Event_Management.API_HostAddress = https://localhost:7121
 
-GET {{RaceDay_Event_Management.API_HostAddress}}/weatherforecast/
+### Register a participant
+POST {{RaceDay_Event_Management.API_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Amahle",
+  "lastName": "Nkosi",
+  "email": "amahle@example.com",
+  "password": "Password123!",
+  "phoneNumber": "0825550199",
+  "role": "Participant"
+}
+
+### Log in (the session cookie is stored for the requests below)
+POST {{RaceDay_Event_Management.API_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "thabo@raceday.co.za",
+  "password": "Password123!"
+}
+
+###
+GET {{RaceDay_Event_Management.API_HostAddress}}/api/auth/session
+Accept: application/json
+
+###
+GET {{RaceDay_Event_Management.API_HostAddress}}/api/events
 Accept: application/json
 
 ###

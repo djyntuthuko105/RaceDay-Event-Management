@@ -42,6 +42,7 @@ RaceDay-Event-Management/
 │
 ├── .github/
 │   └── workflows/
+│       ├── ci.yml
 │       └── part1-repocheck.yml
 │
 ├── docs/
@@ -49,6 +50,9 @@ RaceDay-Event-Management/
 │   ├── erd.png
 │   ├── RaceDayDatabase.sql
 │   └── CI.png
+│
+├── RaceDay-Event-Management.API/
+├── RaceDay-Event-Management.API.Tests/
 │
 └── README.md
 ```
@@ -284,3 +288,71 @@ RaceDay Part 1 has been completed with the required system planning, database de
 The ERD, API Endpoint Plan and SQL Database Script provide the foundation for the RaceDay system and are stored together in the `docs` folder.
 
 GitHub is used for version control, while GitHub Actions provides automated validation of the required Part 1 repository structure.
+
+---
+
+## Part 2 - REST API
+
+Part 2 is an ASP.NET Core Web API. It follows the endpoint plan in `docs/api_endpoint_plan.md` and uses Entity Framework Core to create the same tables as `docs/RaceDayDatabase.sql`.
+
+Passwords are hashed. After login, the API keeps the user id and role in a server-side session. Organiser and Participant routes reject the wrong role.
+
+### Requirements
+
+- .NET 8 SDK
+- SQL Server, the same instance you use in SSMS
+
+### Connection string
+
+`RaceDay-Event-Management.API/appsettings.json` points at SQL Server Express:
+
+```text
+Server=localhost\SQLEXPRESS;Database=RaceDayDB;Trusted_Connection=True;TrustServerCertificate=True;
+```
+
+If SSMS connects to a different server name, change `Server=localhost\SQLEXPRESS` to that name. Other common names are `localhost\SQLEXPRESS01` and `(localdb)\MSSQLLocalDB`.
+
+If you already created `RaceDayDB` by running the Part 1 script, drop that database in SSMS first. The API creates it again through EF Core, including the sample events, and the sample passwords are real hashes.
+
+### Run the API
+
+From the repository folder:
+
+```text
+dotnet run --project RaceDay-Event-Management.API
+```
+
+Then open Swagger:
+
+```text
+http://localhost:5264/swagger
+```
+
+The https profile is also there if you want it:
+
+```text
+dotnet run --project RaceDay-Event-Management.API --launch-profile https
+```
+
+That one opens `https://localhost:7121/swagger`.
+
+Log in with `POST /api/auth/login` before trying a protected endpoint. Swagger keeps the session cookie for the calls that follow.
+
+### Sample logins
+
+Every seeded account uses the password `Password123!`.
+
+| Email | Role |
+| --- | --- |
+| thabo@raceday.co.za | Organiser |
+| naledi@raceday.co.za | Organiser |
+| kabelo@example.com | Participant |
+| lerato@example.com | Participant |
+
+### Tests
+
+```text
+dotnet test RaceDay-Event-Management.sln
+```
+
+GitHub Actions builds the solution and runs these tests from `.github/workflows/ci.yml`.
