@@ -273,6 +273,53 @@ public class RaceDayApiTests : IClassFixture<RaceDayApiFactory>
     }
 
     [Fact]
+    public async Task RecordResult_DuplicateFinishPosition_ReturnsConflict()
+    {
+        var organiser = await RegisterAndLogin("Organiser");
+        var (eventId, categoryId) = await CreateEventWithCategory(organiser);
+        var firstId = await Enrol(eventId, categoryId);
+        var secondId = await Enrol(eventId, categoryId);
+
+        await AssertStatus(
+            await organiser.PostAsJsonAsync($"/api/enrolments/{firstId}/result", new
+            {
+                finishTime = "00:40:00",
+                finishPosition = 1
+            }),
+            HttpStatusCode.Created);
+
+        var clash = await organiser.PostAsJsonAsync($"/api/enrolments/{secondId}/result", new
+        {
+            finishTime = "00:41:00",
+            finishPosition = 1
+        });
+        await AssertStatus(clash, HttpStatusCode.Conflict);
+    }
+
+    [Fact]
+    public async Task GetResult_BelongingToAnotherParticipant_ReturnsForbidden()
+    {
+        var organiser = await RegisterAndLogin("Organiser");
+        var (eventId, categoryId) = await CreateEventWithCategory(organiser);
+        var owner = await RegisterAndLogin("Participant");
+        var enrolment = await owner.PostAsJsonAsync($"/api/events/{eventId}/enrolments", new { categoryId });
+        await AssertStatus(enrolment, HttpStatusCode.Created);
+        var enrolmentId = (await ReadJson(enrolment)).GetProperty("enrolmentId").GetInt32();
+
+        var recorded = await organiser.PostAsJsonAsync($"/api/enrolments/{enrolmentId}/result", new
+        {
+            finishTime = "00:50:00",
+            finishPosition = 4
+        });
+        await AssertStatus(recorded, HttpStatusCode.Created);
+        var resultId = (await ReadJson(recorded)).GetProperty("resultId").GetInt32();
+
+        var someoneElse = await RegisterAndLogin("Participant");
+        var response = await someoneElse.GetAsync($"/api/results/{resultId}");
+        await AssertStatus(response, HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
     public async Task RecordResult_AsParticipant_ReturnsForbidden()
     {
         var participant = await RegisterAndLogin("Participant");
@@ -306,11 +353,23 @@ public class RaceDayApiTests : IClassFixture<RaceDayApiFactory>
         return client;
     }
 
-    private async Task<int> CreateBareEvent(HttpClient organiser)
+    private async Task<int> Enrol(int eventId, int categoryId)
+    {
+        var participant = await RegisterAndLogin("Participant");
+        var enrolment = await participant.PostAsJsonAsync($"/api/events/{eventId}/enrolments", new { categoryId });
+        await AssertStatus(enrolment, HttpStatusCode.Created);
+        return (await ReadJson(enrolment)).GetProperty("enrolmentId").GetInt32();
+    }
+
+    private Task<int> CreateBareEvent(HttpClient organiser)
+    {
+        return CreateEventOn(organiser, DateOnly.FromDateTime(DateTime.Today.AddDays(30)));
+    }
+
+    private async Task<int> CreateEventOn(HttpClient organiser, DateOnly eventDate)
     {
         var typeId = await GetOrCreateRunType(organiser);
         var locationId = await CreateLocation(organiser);
-        var eventDate = DateOnly.FromDateTime(DateTime.Today.AddDays(30));
 
         var created = await organiser.PostAsJsonAsync("/api/events", new
         {
