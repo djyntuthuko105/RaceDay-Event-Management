@@ -320,6 +320,57 @@ public class RaceDayApiTests : IClassFixture<RaceDayApiFactory>
     }
 
     [Fact]
+    public async Task CreateCategory_LongerThanTheEvent_ReturnsBadRequest()
+    {
+        var organiser = await RegisterAndLogin("Organiser");
+        var eventId = await CreateBareEvent(organiser);
+
+        var response = await organiser.PostAsJsonAsync($"/api/events/{eventId}/categories", new
+        {
+            categoryName = "Too long",
+            categoryDistanceKm = 21
+        });
+        await AssertStatus(response, HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task Enrol_AfterRegistrationCloses_ReturnsConflict()
+    {
+        var organiser = await RegisterAndLogin("Organiser");
+        var eventId = await CreateEventOn(organiser, DateOnly.FromDateTime(DateTime.Today.AddDays(-1)));
+        var category = await organiser.PostAsJsonAsync($"/api/events/{eventId}/categories", new
+        {
+            categoryName = "Open",
+            maximumParticipants = 20
+        });
+        await AssertStatus(category, HttpStatusCode.Created);
+        var categoryId = (await ReadJson(category)).GetProperty("categoryId").GetInt32();
+        var participant = await RegisterAndLogin("Participant");
+
+        var response = await participant.PostAsJsonAsync($"/api/events/{eventId}/enrolments", new { categoryId });
+        await AssertStatus(response, HttpStatusCode.Conflict);
+    }
+
+    [Fact]
+    public async Task Enrol_WhenTheCategoryIsFull_ReturnsConflict()
+    {
+        var organiser = await RegisterAndLogin("Organiser");
+        var eventId = await CreateBareEvent(organiser);
+        var category = await organiser.PostAsJsonAsync($"/api/events/{eventId}/categories", new
+        {
+            categoryName = "Open",
+            maximumParticipants = 1
+        });
+        await AssertStatus(category, HttpStatusCode.Created);
+        var categoryId = (await ReadJson(category)).GetProperty("categoryId").GetInt32();
+
+        await Enrol(eventId, categoryId);
+        var second = await RegisterAndLogin("Participant");
+        var response = await second.PostAsJsonAsync($"/api/events/{eventId}/enrolments", new { categoryId });
+        await AssertStatus(response, HttpStatusCode.Conflict);
+    }
+
+    [Fact]
     public async Task RecordResult_AsParticipant_ReturnsForbidden()
     {
         var participant = await RegisterAndLogin("Participant");
