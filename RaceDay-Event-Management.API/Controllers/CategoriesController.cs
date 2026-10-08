@@ -85,6 +85,10 @@ public class CategoriesController : ControllerBase
         if (problem is not null)
             return problem;
 
+        var distanceProblem = CategoryDistanceProblem(request, owned.Event!);
+        if (distanceProblem is not null)
+            return distanceProblem;
+
         var category = new Category { EventId = eventId };
         Apply(category, request);
         _db.Categories.Add(category);
@@ -121,6 +125,10 @@ public class CategoriesController : ControllerBase
         var problem = Validate(request);
         if (problem is not null)
             return problem;
+
+        var distanceProblem = CategoryDistanceProblem(request, owned.Event!);
+        if (distanceProblem is not null)
+            return distanceProblem;
 
         Apply(category, request);
         await _db.SaveChangesAsync(cancellationToken);
@@ -171,6 +179,14 @@ public class CategoriesController : ControllerBase
             return (null, StatusCode(StatusCodes.Status403Forbidden, new ApiMessage("You can only manage events you organised.")));
 
         return (race, null);
+    }
+
+    private static IActionResult? CategoryDistanceProblem(CategoryWriteRequest request, Event race)
+    {
+        if (request.CategoryDistanceKm is decimal distance && distance > race.DistanceKm)
+            return new BadRequestObjectResult(new ApiMessage("The category distance cannot be longer than the event distance."));
+
+        return null;
     }
 
     private static IActionResult? Validate(CategoryWriteRequest request)
