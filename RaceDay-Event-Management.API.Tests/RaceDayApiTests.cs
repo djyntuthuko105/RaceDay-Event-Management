@@ -371,6 +371,19 @@ public class RaceDayApiTests : IClassFixture<RaceDayApiFactory>
     }
 
     [Fact]
+    public async Task Responses_DoNotIncludeThePasswordHash()
+    {
+        var organiser = await RegisterAndLogin("Organiser");
+        var eventId = await CreateBareEvent(organiser);
+
+        var detail = await (await organiser.GetAsync($"/api/events/{eventId}")).Content.ReadAsStringAsync();
+        var profile = await (await organiser.GetAsync("/api/users/me")).Content.ReadAsStringAsync();
+
+        Assert.DoesNotContain("pbkdf2", detail, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("pbkdf2", profile, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public async Task RecordResult_AsParticipant_ReturnsForbidden()
     {
         var participant = await RegisterAndLogin("Participant");
