@@ -1,0 +1,75 @@
+name: CI
+
+# Builds and tests the RaceDay solution for Part 2 (Web API) and the final POE (MVC + Docker).
+# Every .sln in the repo is restored, built and tested, so new projects (the MVC app, test
+# projects) are picked up automatically once they are added to the solution.
+on:
+  push:
+    branches: [ main, master, 'part-2*', 'part-3*', 'final*' ]
+  pull_request:
+    branches: [ main, master, 'part-2*', 'part-3*', 'final*' ]
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      # Get the latest version of the repository
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Install the .NET SDK used by the projects
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      # Restore NuGet packages for every solution
+      - name: Restore
+        run: |
+          for sln in $(find . -name "*.sln" -not -path "*/bin/*" -not -path "*/obj/*"); do
+            echo "Restoring $sln"
+            dotnet restore "$sln"
+          done
+
+      # Build every solution in Release mode
+      - name: Build
+        run: |
+          for sln in $(find . -name "*.sln" -not -path "*/bin/*" -not -path "*/obj/*"); do
+            echo "Building $sln"
+            dotnet build "$sln" --configuration Release --no-restore
+          done
+
+      # Run all unit tests (passes cleanly while there are no test projects yet)
+      - name: Test
+        run: |
+          for sln in $(find . -name "*.sln" -not -path "*/bin/*" -not -path "*/obj/*"); do
+            echo "Testing $sln"
+            dotnet test "$sln" --configuration Release --no-build --verbosity normal
+          done
+
+  docker:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    needs: build-and-test
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # The final POE adds a Dockerfile; until then this step is skipped
+      - name: Find Dockerfile
+        id: dockerfile
+        run: |
+          file=$(find . -name "Dockerfile" -not -path "*/bin/*" -not -path "*/obj/*" | head -n 1)
+          if [ -n "$file" ]; then
+            echo "Found $file"
+            echo "path=$file" >> "$GITHUB_OUTPUT"
+          else
+            echo "No Dockerfile yet, skipping the Docker build."
+          fi
+
+      - name: Build Docker Image
+        if: steps.dockerfile.outputs.path != ''
+        run: docker build -f "${{ steps.dockerfile.outputs.path }}" -t raceday-event-management:ci .
