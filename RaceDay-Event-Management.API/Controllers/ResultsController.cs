@@ -27,7 +27,7 @@ public class ResultsController : ControllerBase
     /// <response code="401">The caller is not logged in.</response>
     /// <response code="403">The event belongs to another organiser.</response>
     /// <response code="404">No enrolment exists with that id.</response>
-    /// <response code="409">A result already exists for this enrolment.</response>
+    /// <response code="409">A result already exists for this enrolment, or that finish position is already used.</response>
     [HttpPost("api/enrolments/{enrolmentId:int}/result")]
     [RequireSession(Roles.Organiser)]
     [ProducesResponseType(typeof(ResultResponse), StatusCodes.Status201Created)]
@@ -54,6 +54,9 @@ public class ResultsController : ControllerBase
 
         if (enrolment.Status == EnrolmentStatuses.Cancelled)
             return Conflict(new ApiMessage("A cancelled enrolment cannot receive a result."));
+
+        if (await PositionTaken(enrolment.EventId, request.FinishPosition, null, cancellationToken))
+            return Conflict(new ApiMessage("That finish position is already used for this event."));
 
         var result = new Result
         {
@@ -156,6 +159,7 @@ public class ResultsController : ControllerBase
     /// <response code="401">The caller is not logged in.</response>
     /// <response code="403">The event belongs to another organiser.</response>
     /// <response code="404">No result exists with that id.</response>
+    /// <response code="409">That finish position is already used for this event.</response>
     [HttpPut("api/results/{id:int}")]
     [RequireSession(Roles.Organiser)]
     [ProducesResponseType(typeof(ResultResponse), StatusCodes.Status200OK)]
@@ -163,6 +167,7 @@ public class ResultsController : ControllerBase
     [ProducesResponseType(typeof(ApiMessage), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ApiMessage), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ApiMessage), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiMessage), StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Update(int id, ResultWriteRequest request, CancellationToken cancellationToken)
     {
         var result = await _db.Results
@@ -176,12 +181,24 @@ public class ResultsController : ControllerBase
         if (result.Enrolment.Event.OrganiserId != SessionReader.UserId(HttpContext))
             return StatusCode(StatusCodes.Status403Forbidden, new ApiMessage("You can only update results for your own events."));
 
+        if (await PositionTaken(result.Enrolment.EventId, request.FinishPosition, result.ResultId, cancellationToken))
+            return Conflict(new ApiMessage("That finish position is already used for this event."));
+
         result.FinishTime = request.FinishTime;
         result.FinishPosition = request.FinishPosition;
         await _db.SaveChangesAsync(cancellationToken);
 
         var updated = await WithDetails().FirstAsync(item => item.ResultId == result.ResultId, cancellationToken);
         return Ok(Responses.Result(updated));
+    }
+
+    private Task<bool> PositionTaken(int eventId, int finishPosition, int? exceptResultId, CancellationToken cancellationToken)
+    {
+        return _db.Results.AnyAsync(
+            result => result.Enrolment.EventId == eventId
+                && result.FinishPosition == finishPosition
+                && (exceptResultId == null || result.ResultId != exceptResultId),
+            cancellationToken);
     }
 
     private IQueryable<Result> WithDetails()
