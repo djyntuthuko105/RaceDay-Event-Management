@@ -133,6 +133,70 @@ public class RaceDayApiTests : IClassFixture<RaceDayApiFactory>
     }
 
     [Fact]
+    public async Task EventDetail_IncludesTheCategoriesForThatEvent()
+    {
+        var organiser = await RegisterAndLogin("Organiser");
+        var (eventId, categoryId) = await CreateEventWithCategory(organiser);
+
+        var detail = await CreateClient().GetAsync($"/api/events/{eventId}");
+        await AssertStatus(detail, HttpStatusCode.OK);
+
+        var categories = (await ReadJson(detail)).GetProperty("categories");
+        var ids = categories.EnumerateArray().Select(item => item.GetProperty("categoryId").GetInt32());
+        Assert.Contains(categoryId, ids);
+    }
+
+    [Fact]
+    public async Task UpdateEvent_ByAnotherOrganiser_ReturnsForbidden()
+    {
+        var owner = await RegisterAndLogin("Organiser");
+        var eventId = await CreateBareEvent(owner);
+        var other = await RegisterAndLogin("Organiser");
+        var detail = await ReadJson(await other.GetAsync($"/api/events/{eventId}"));
+        var eventDate = DateOnly.FromDateTime(DateTime.Today.AddDays(20));
+
+        var response = await other.PutAsJsonAsync($"/api/events/{eventId}", new
+        {
+            eventName = "Taken over",
+            description = "Another organiser should not be able to change this event.",
+            eventDate,
+            distanceKm = 5,
+            registrationDeadline = eventDate.AddDays(-2),
+            eventTypeId = detail.GetProperty("eventTypeId").GetInt32(),
+            locationId = detail.GetProperty("locationId").GetInt32()
+        });
+        await AssertStatus(response, HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
+    public async Task DeleteEvent_WithACategory_ReturnsConflict()
+    {
+        var organiser = await RegisterAndLogin("Organiser");
+        var (eventId, _) = await CreateEventWithCategory(organiser);
+
+        var response = await organiser.DeleteAsync($"/api/events/{eventId}");
+        await AssertStatus(response, HttpStatusCode.Conflict);
+    }
+
+    [Fact]
+    public async Task UpdateProfile_ChangesTheLoggedInUsersName()
+    {
+        var participant = await RegisterAndLogin("Participant");
+
+        var response = await participant.PutAsJsonAsync("/api/users/me", new
+        {
+            firstName = "Amahle",
+            lastName = "Nkosi",
+            phoneNumber = "0821112233"
+        });
+
+        await AssertStatus(response, HttpStatusCode.OK);
+        var profile = await ReadJson(response);
+        Assert.Equal("Amahle", profile.GetProperty("firstName").GetString());
+        Assert.Equal("Nkosi", profile.GetProperty("lastName").GetString());
+    }
+
+    [Fact]
     public async Task UpcomingEvents_CanBeListedWithoutLoggingIn()
     {
         var organiser = await RegisterAndLogin("Organiser");
