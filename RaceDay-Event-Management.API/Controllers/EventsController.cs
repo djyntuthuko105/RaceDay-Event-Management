@@ -38,20 +38,22 @@ public class EventsController : ControllerBase
     }
 
     /// <summary>
-    /// Returns one event, including its type, venue, and organiser name.
+    /// Returns one event with its type, venue, organiser, and categories.
     /// </summary>
     /// <response code="200">The event was found.</response>
     /// <response code="404">No event exists with that id.</response>
     [HttpGet("{id:int}")]
-    [ProducesResponseType(typeof(EventResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(EventDetailResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiMessage), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(int id, CancellationToken cancellationToken)
     {
-        var race = await Details().FirstOrDefaultAsync(item => item.EventId == id, cancellationToken);
+        var race = await Details()
+            .Include(item => item.Categories)
+            .FirstOrDefaultAsync(item => item.EventId == id, cancellationToken);
         if (race is null)
             return NotFound(new ApiMessage("Event does not exist."));
 
-        return Ok(Responses.Event(race));
+        return Ok(Responses.EventDetail(race));
     }
 
     /// <summary>

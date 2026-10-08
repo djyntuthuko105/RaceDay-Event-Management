@@ -57,6 +57,33 @@ public static class Responses
         CreatedAt = race.CreatedAt
     };
 
+    public static EventDetailResponse EventDetail(Event race)
+    {
+        var summary = Event(race);
+        return new EventDetailResponse
+        {
+            EventId = summary.EventId,
+            EventName = summary.EventName,
+            Description = summary.Description,
+            EventDate = summary.EventDate,
+            DistanceKm = summary.DistanceKm,
+            RegistrationDeadline = summary.RegistrationDeadline,
+            OrganiserId = summary.OrganiserId,
+            OrganiserName = summary.OrganiserName,
+            EventTypeId = summary.EventTypeId,
+            EventType = summary.EventType,
+            LocationId = summary.LocationId,
+            VenueName = summary.VenueName,
+            City = summary.City,
+            Province = summary.Province,
+            CreatedAt = summary.CreatedAt,
+            Categories = race.Categories
+                .OrderBy(category => category.CategoryName)
+                .Select(Category)
+                .ToList()
+        };
+    }
+
     public static CategoryResponse Category(Category category) => new()
     {
         CategoryId = category.CategoryId,

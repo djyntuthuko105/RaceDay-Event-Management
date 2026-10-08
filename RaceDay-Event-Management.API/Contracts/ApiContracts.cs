@@ -200,6 +200,11 @@ public class EventResponse
     public DateTime CreatedAt { get; set; }
 }
 
+public class EventDetailResponse : EventResponse
+{
+    public List<CategoryResponse> Categories { get; set; } = new();
+}
+
 public class CategoryWriteRequest
 {
     [Required]
