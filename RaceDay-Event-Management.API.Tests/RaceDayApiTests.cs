@@ -392,6 +392,31 @@ public class RaceDayApiTests : IClassFixture<RaceDayApiFactory>
     }
 
     [Fact]
+    public async Task UpdateCategory_LimitBelowCurrentEntries_ReturnsConflict()
+    {
+        var organiser = await RegisterAndLogin("Organiser");
+        var (eventId, categoryId) = await CreateEventWithCategory(organiser);
+        await Enrol(eventId, categoryId);
+        await Enrol(eventId, categoryId);
+
+        var tooLow = await organiser.PutAsJsonAsync($"/api/categories/{categoryId}", new
+        {
+            categoryName = "Open",
+            categoryDistanceKm = 10,
+            maximumParticipants = 1
+        });
+        await AssertStatus(tooLow, HttpStatusCode.Conflict);
+
+        var exact = await organiser.PutAsJsonAsync($"/api/categories/{categoryId}", new
+        {
+            categoryName = "Open",
+            categoryDistanceKm = 10,
+            maximumParticipants = 2
+        });
+        await AssertStatus(exact, HttpStatusCode.OK);
+    }
+
+    [Fact]
     public async Task Responses_DoNotIncludeThePasswordHash()
     {
         var organiser = await RegisterAndLogin("Organiser");

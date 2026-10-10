@@ -105,6 +105,7 @@ public class CategoriesController : ControllerBase
     /// <response code="401">The caller is not logged in.</response>
     /// <response code="403">The event belongs to another organiser.</response>
     /// <response code="404">No category exists with that id.</response>
+    /// <response code="409">The new participant limit is lower than the number already entered.</response>
     [HttpPut("api/categories/{id:int}")]
     [RequireSession(Roles.Organiser)]
     [ProducesResponseType(typeof(CategoryResponse), StatusCodes.Status200OK)]
@@ -112,6 +113,7 @@ public class CategoriesController : ControllerBase
     [ProducesResponseType(typeof(ApiMessage), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ApiMessage), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ApiMessage), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiMessage), StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Update(int id, CategoryWriteRequest request, CancellationToken cancellationToken)
     {
         var category = await _db.Categories.FirstOrDefaultAsync(item => item.CategoryId == id, cancellationToken);
@@ -129,6 +131,13 @@ public class CategoriesController : ControllerBase
         var distanceProblem = CategoryDistanceProblem(request, owned.Event!);
         if (distanceProblem is not null)
             return distanceProblem;
+
+        if (request.MaximumParticipants is int limit)
+        {
+            var entered = await _db.Enrolments.CountAsync(enrolment => enrolment.CategoryId == id, cancellationToken);
+            if (entered > limit)
+                return Conflict(new ApiMessage($"{entered} participants are already entered, so the limit cannot be lower than that."));
+        }
 
         Apply(category, request);
         await _db.SaveChangesAsync(cancellationToken);
