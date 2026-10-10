@@ -238,6 +238,48 @@ public class RaceDayApiTests : IClassFixture<RaceDayApiFactory>
     }
 
     [Fact]
+    public async Task Participant_CanCancelTheirOwnEnrolment_AndEnterAgain()
+    {
+        var organiser = await RegisterAndLogin("Organiser");
+        var (eventId, categoryId) = await CreateEventWithCategory(organiser);
+        var participant = await RegisterAndLogin("Participant");
+        var enrolment = await participant.PostAsJsonAsync($"/api/events/{eventId}/enrolments", new { categoryId });
+        await AssertStatus(enrolment, HttpStatusCode.Created);
+        var enrolmentId = (await ReadJson(enrolment)).GetProperty("enrolmentId").GetInt32();
+
+        var someoneElse = await RegisterAndLogin("Participant");
+        await AssertStatus(await someoneElse.DeleteAsync($"/api/enrolments/{enrolmentId}"), HttpStatusCode.Forbidden);
+
+        await AssertStatus(await participant.DeleteAsync($"/api/enrolments/{enrolmentId}"), HttpStatusCode.NoContent);
+        await AssertStatus(await participant.GetAsync($"/api/enrolments/{enrolmentId}"), HttpStatusCode.NotFound);
+
+        var again = await participant.PostAsJsonAsync($"/api/events/{eventId}/enrolments", new { categoryId });
+        await AssertStatus(again, HttpStatusCode.Created);
+    }
+
+    [Fact]
+    public async Task CancelEnrolment_AfterAResultIsRecorded_ReturnsConflict()
+    {
+        var organiser = await RegisterAndLogin("Organiser");
+        var (eventId, categoryId) = await CreateEventWithCategory(organiser);
+        var participant = await RegisterAndLogin("Participant");
+        var enrolment = await participant.PostAsJsonAsync($"/api/events/{eventId}/enrolments", new { categoryId });
+        await AssertStatus(enrolment, HttpStatusCode.Created);
+        var enrolmentId = (await ReadJson(enrolment)).GetProperty("enrolmentId").GetInt32();
+
+        await AssertStatus(
+            await organiser.PostAsJsonAsync($"/api/enrolments/{enrolmentId}/result", new
+            {
+                finishTime = "00:55:30",
+                finishPosition = 1
+            }),
+            HttpStatusCode.Created);
+
+        var response = await participant.DeleteAsync($"/api/enrolments/{enrolmentId}");
+        await AssertStatus(response, HttpStatusCode.Conflict);
+    }
+
+    [Fact]
     public async Task Enrol_AsOrganiser_ReturnsForbidden()
     {
         var organiser = await RegisterAndLogin("Organiser");
