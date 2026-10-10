@@ -291,68 +291,142 @@ GitHub is used for version control, while GitHub Actions provides automated vali
 
 ---
 
-## Part 2 - REST API
+---
 
-Part 2 is an ASP.NET Core Web API. It follows the endpoint plan in `docs/api_endpoint_plan.md` and uses Entity Framework Core to create the same tables as `docs/RaceDayDatabase.sql`.
+## Part 2 - RESTful API Development
 
-Passwords are hashed. After login, the API keeps the user id and role in a server-side session. Organiser and Participant routes reject the wrong role.
+Part 2 implements the RESTful API for the RaceDay system using ASP.NET Core 8 Web API. The implementation follows the API specification defined in `docs/api_endpoint_plan.md` and connects to Microsoft SQL Server using Entity Framework Core Code-First.
 
-### Requirements
+### Project Locations
 
-- .NET 8 SDK
-- SQL Server, the same instance you use in SSMS
+- **API Project:** `RaceDay-Event-Management.API/`
+- **Unit Test Project:** `RaceDay-Event-Management.API.Tests/`
+- **Solution File:** `RaceDay-Event-Management.sln`
 
-### Connection string
+---
 
-`RaceDay-Event-Management.API/appsettings.json` points at SQL Server Express:
+### Features and Implementation
+
+1. **Database Integration & EF Core**
+   - Built using ASP.NET Core 8 Web API and EF Core Code-First.
+   - `RaceDayDbContext` maps to the 9 core entities matching the Part 1 database schema (`Users`, `EventTypes`, `Locations`, `Events`, `Categories`, `Enrolments`, `Results`, `EventImages`, `WeatherSnapshots`).
+   - Seeds default categories, locations, event types, events, and sample user accounts.
+
+2. **Authentication & Password Hashing**
+   - Account registration (`POST /api/auth/register`) supporting `Organiser` and `Participant` roles.
+   - Login (`POST /api/auth/login`) with credential validation and session creation.
+   - Password hashing using PBKDF2 with SHA256 key derivation.
+   - Sensitive fields (`PasswordHash`) are excluded from API response contracts (`UserResponse`).
+
+3. **Role-Based Access Control (RBAC)**
+   - Server-side session authentication enforced via custom session filters (`[RequireSession]`).
+   - Role permissions for `Organiser` and `Participant` strictly enforced at API level:
+     - **Organiser:** Create, edit, and delete events; create and manage categories; record and update participant finish times/positions; view enrolments for owned events.
+     - **Participant:** Browse events, view event categories, enrol in events, view personal enrolments, cancel eligible enrolments, and view personal race history.
+
+4. **API Endpoint Coverage**
+   - Implemented **43 RESTful API endpoints** across 10 controllers:
+     - Authentication (4 endpoints)
+     - User Profile (3 endpoints)
+     - Events (6 endpoints)
+     - Event Types (5 endpoints)
+     - Locations (5 endpoints)
+     - Categories (5 endpoints)
+     - Event Enrolments (4 endpoints)
+     - Results (5 endpoints)
+     - Event Images (3 endpoints)
+     - Weather Snapshots (3 endpoints)
+
+5. **Swagger Integration**
+   - Swagger / OpenAPI UI integrated at `/swagger` with XML documentation comments describing endpoints, request models, and expected HTTP status codes.
+
+6. **Unit & Integration Testing**
+   - Test suite containing **27 integration tests** using xUnit and `WebApplicationFactory`.
+   - Tests cover registration, login/logout, password protection, role authorization rejections, event CRUD, category distance checks, capacity limits, enrolment cancellations, and duplicate result position prevention.
+
+7. **Version Control & CI/CD**
+   - Contains over 40 commits tracking project progress.
+   - GitHub Actions workflow (`.github/workflows/ci.yml`) compiles the solution and executes unit tests automatically on push.
+
+---
+
+### Database Setup & Connection String
+
+The API connects to SQL Server Express using the connection string in `RaceDay-Event-Management.API/appsettings.json`:
 
 ```text
 Server=localhost\SQLEXPRESS;Database=RaceDayDB;Trusted_Connection=True;TrustServerCertificate=True;
 ```
 
-If SSMS connects to a different server name, change `Server=localhost\SQLEXPRESS` to that name. Other common names are `localhost\SQLEXPRESS01` and `(localdb)\MSSQLLocalDB`.
+If your SQL Server instance uses a different server name, update `appsettings.json` accordingly (e.g., `localhost\SQLEXPRESS01` or `(localdb)\MSSQLLocalDB`).
 
-If you already created `RaceDayDB` by running the Part 1 script, drop that database in SSMS first. The API creates it again through EF Core, including the sample events, and the sample passwords are real hashes.
+---
 
-### Run the API
+### Running the API
 
-From the repository folder:
+From the root repository directory:
 
 ```text
 dotnet run --project RaceDay-Event-Management.API
 ```
 
-Then open Swagger:
+Access Swagger UI in browser:
 
 ```text
 http://localhost:5264/swagger
 ```
 
-The https profile is also there if you want it:
+To run using HTTPS launch profile:
 
 ```text
 dotnet run --project RaceDay-Event-Management.API --launch-profile https
 ```
 
-That one opens `https://localhost:7121/swagger`.
+Access Swagger UI:
 
-Log in with `POST /api/auth/login` before trying a protected endpoint. Swagger keeps the session cookie for the calls that follow.
+```text
+https://localhost:7121/swagger
+```
 
-### Sample logins
+---
 
-Every seeded account uses the password `Password123!`.
+### Sample Accounts for Testing
+
+All seeded test accounts use the password: `Password123!`
 
 | Email | Role |
-| --- | --- |
-| thabo@raceday.co.za | Organiser |
-| naledi@raceday.co.za | Organiser |
-| kabelo@example.com | Participant |
-| lerato@example.com | Participant |
+| :--- | :--- |
+| `thabo@raceday.co.za` | Organiser |
+| `naledi@raceday.co.za` | Organiser |
+| `kabelo@example.com` | Participant |
+| `lerato@example.com` | Participant |
 
-### Tests
+---
+
+### Running Unit Tests
+
+To run the unit test suite:
 
 ```text
 dotnet test RaceDay-Event-Management.sln
 ```
 
-GitHub Actions builds the solution and runs these tests from `.github/workflows/ci.yml`.
+---
+
+### Part 2 Component Status
+
+| Part 2 Component | Status |
+| :--- | :--- |
+| API & Database Architecture | Complete |
+| Authentication & Password Security | Complete |
+| Role-Based Access Control | Complete |
+| RESTful Endpoints (43 Endpoints) | Complete |
+| Swagger UI Integration | Complete |
+| Unit Testing Suite (27 Tests) | Complete |
+| GitHub Actions CI/CD | Complete |
+
+---
+
+### Author
+
+- **Name:** `ST10444612 Mike Thando Ndaba`
