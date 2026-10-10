@@ -100,7 +100,7 @@ public class EventsController : ControllerBase
     /// Updates an event. The organiser can only change events they created.
     /// </summary>
     /// <response code="200">The event was updated.</response>
-    /// <response code="400">The new details are not valid.</response>
+    /// <response code="400">The new details are not valid, or the event would be shorter than one of its categories.</response>
     /// <response code="401">The caller is not logged in.</response>
     /// <response code="403">The event belongs to another organiser.</response>
     /// <response code="404">No event exists with that id.</response>
@@ -120,6 +120,13 @@ public class EventsController : ControllerBase
         var problem = await ValidateWrite(request, cancellationToken);
         if (problem is not null)
             return problem;
+
+        var categoryDistances = await _db.Categories
+            .Where(category => category.EventId == id && category.CategoryDistanceKm != null)
+            .Select(category => category.CategoryDistanceKm!.Value)
+            .ToListAsync(cancellationToken);
+        if (categoryDistances.Any(distance => distance > request.DistanceKm))
+            return BadRequest(new ApiMessage("The event distance cannot be shorter than one of its categories."));
 
         var race = owned.Event!;
         race.EventTypeId = request.EventTypeId;

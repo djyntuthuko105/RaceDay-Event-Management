@@ -334,6 +334,27 @@ public class RaceDayApiTests : IClassFixture<RaceDayApiFactory>
     }
 
     [Fact]
+    public async Task UpdateEvent_ShorterThanOneOfItsCategories_ReturnsBadRequest()
+    {
+        var organiser = await RegisterAndLogin("Organiser");
+        var (eventId, _) = await CreateEventWithCategory(organiser);
+        var detail = await ReadJson(await organiser.GetAsync($"/api/events/{eventId}"));
+        var eventDate = DateOnly.FromDateTime(DateTime.Today.AddDays(30));
+
+        var response = await organiser.PutAsJsonAsync($"/api/events/{eventId}", new
+        {
+            eventName = "Shortened run",
+            description = "The 10 km category no longer fits inside this event.",
+            eventDate,
+            distanceKm = 5,
+            registrationDeadline = eventDate.AddDays(-5),
+            eventTypeId = detail.GetProperty("eventTypeId").GetInt32(),
+            locationId = detail.GetProperty("locationId").GetInt32()
+        });
+        await AssertStatus(response, HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
     public async Task Enrol_AfterRegistrationCloses_ReturnsConflict()
     {
         var organiser = await RegisterAndLogin("Organiser");
