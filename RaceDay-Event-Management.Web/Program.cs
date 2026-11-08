@@ -22,6 +22,15 @@ builder.Services.AddHttpClient<RaceDay.Web.Services.RaceDayApi>(client =>
 var app = builder.Build();
 app.UseExceptionHandler("/Home/Error");
 app.UseStatusCodePagesWithReExecute("/Home/Status", "?code={0}");
+app.Use(async (context, next) =>
+{
+    context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+    context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
+    context.Response.Headers["Content-Security-Policy"] = "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; form-action 'self'; base-uri 'self'; frame-ancestors 'none'";
+    if (!context.Request.Path.StartsWithSegments("/css") && !context.Request.Path.StartsWithSegments("/js") && !context.Request.Path.StartsWithSegments("/images"))
+        context.Response.Headers.CacheControl = "no-store";
+    await next();
+});
 app.UseStaticFiles();
 app.UseRouting();
 app.UseSession();

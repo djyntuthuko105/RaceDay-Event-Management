@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="900" viewBox="0 0 1000 900">
+<defs><linearGradient id="sky" x2="0" y2="1"><stop stop-color="#a4c68c"/><stop offset="1" stop-color="#edf0bf"/></linearGradient><linearGradient id="road" x2="0.2" y2="1"><stop stop-color="#234637"/><stop offset="1" stop-color="#112d23"/></linearGradient></defs>
+<path fill="url(#sky)" d="M0 0h1000v900H0z"/><circle fill="#eaf1b8" cx="730" cy="205" r="118"/>
+<path fill="#77996e" d="M0 456 170 305 320 420 480 245 730 414 1000 279V900H0z"/>
+<path fill="#497459" d="m0 560 238-149 220 137 205-142 337 95v399H0z"/><path fill="#2b5841" d="M0 650q210-180 500-60t500-80v390H0z"/>
+<path fill="url(#road)" d="M500 475q-140 130 15 225t260 200H120q30-190 230-260t150-165z"/>
+<path fill="none" stroke="#c5dc97" stroke-width="9" stroke-dasharray="30 28" d="M500 483q-120 157-44 192t90 79 28 146"/>
+<g fill="#132f25" transform="translate(518 292) rotate(-8)"><circle cx="30" cy="36" r="26"/><path d="m18 71 52 12 26 108-46 14-39-67z"/><path d="m26 83-64 51-19-29 70-57z"/><path d="m-56 106-52-51 17-20 64 56z"/><path d="m62 92 83 31-13 30-79-28z"/><path d="m124 130 26-67 26 10-23 78z"/><path d="m51 185 45 17-58 88-38-10z"/><path d="m2 260 37 19-3 111H6z"/><path d="m78 174 44 6 24 78-28 14-42-52z"/><path d="m120 247 28 10 91-35 14 27-115 40z"/><path d="M-2 381h50l12 17H-2zM235 220l19 22 22 7 9-15-31-29z"/></g>
+<g fill="none" stroke="#d6eb9b" stroke-width="3" opacity=".6"><circle cx="800" cy="700" r="90"/><circle cx="800" cy="700" r="110"/></g><text x="50" y="840" fill="#d7e8b5" font-family="Arial,sans-serif" font-size="15" letter-spacing="6">FIND YOUR STRIDE.</text>
+</svg>

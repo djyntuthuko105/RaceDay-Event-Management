@@ -8,3 +8,10 @@ document.querySelectorAll('form[data-confirm]').forEach(form => {
         if (!window.confirm(form.dataset.confirm)) event.preventDefault();
     });
 });
+document.querySelectorAll('input[type="file"]').forEach(input => {
+    input.addEventListener('change', () => {
+        const file = input.files[0];
+        input.setCustomValidity(file && file.size > 5 * 1024 * 1024 ? 'Choose an image no larger than 5 MB.' : '');
+        input.reportValidity();
+    });
+});
