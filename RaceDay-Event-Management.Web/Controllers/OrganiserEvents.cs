@@ -21,6 +21,7 @@ public partial class OrganiserController
             try
             {
                 var created = (await api.SendAsync<EventResponse>(HttpMethod.Post, "api/events", model))!;
+                if (!await SaveBanner(created.EventId, model.BannerFile)) return RedirectToAction(nameof(Edit), new { id = created.EventId });
                 TempData["Success"] = "Event created. Add your race categories next.";
                 return RedirectToAction(nameof(Categories), new { id = created.EventId });
             }
@@ -46,6 +47,7 @@ public partial class OrganiserController
             try
             {
                 await api.SendAsync<EventResponse>(HttpMethod.Put, $"api/events/{id}", model);
+                if (!await SaveBanner(id, model.BannerFile)) return RedirectToAction(nameof(Edit), new { id });
                 TempData["Success"] = "Event details saved.";
                 return RedirectToAction(nameof(Events));
             }
@@ -80,10 +82,30 @@ public partial class OrganiserController
         }
         catch (ApiException ex) when (ex.StatusCode == HttpStatusCode.BadRequest) { ModelState.AddModelError("", ex.Message); return View(model); }
     }
+    [HttpPost]
+    public async Task<IActionResult> DeleteImage(int id, int imageId)
+    {
+        await OwnedEvent(id);
+        var images = await api.GetAsync<List<EventImageResponse>>($"api/events/{id}/images");
+        if (!images.Any(image => image.EventImageId == imageId)) return NotFound();
+        await api.SendAsync<ApiMessage>(HttpMethod.Delete, $"api/event-images/{imageId}");
+        TempData["Success"] = "Banner image removed.";
+        return RedirectToAction(nameof(Edit), new { id });
+    }
+    private async Task<bool> SaveBanner(int id, IFormFile? file)
+    {
+        if (file is null) return true;
+        try { await api.UploadAsync<EventImageResponse>($"api/events/{id}/images", file); return true; }
+        catch (ApiException ex) when (ex.StatusCode != HttpStatusCode.Unauthorized)
+        { TempData["Error"] = "The event was saved, but the banner could not be uploaded. Use a JPG, PNG, GIF or WebP up to 5 MB and try again."; return false; }
+        catch (HttpRequestException)
+        { TempData["Error"] = "The event was saved, but image storage is unavailable. You can upload a banner later."; return false; }
+    }
     private async Task LoadChoices(EventFormPage page)
     {
         page.Locations = await api.GetAsync<List<LocationResponse>>("api/locations");
         page.Types = await api.GetAsync<List<EventTypeResponse>>("api/event-types");
+        if (page.EventId > 0) page.Images = await api.GetAsync<List<EventImageResponse>>($"api/events/{page.EventId}/images");
     }
     private async Task<EventDetailResponse> OwnedEvent(int id)
     {

@@ -3,6 +3,8 @@ namespace RaceDay.Web.Models;
 public class EventFormPage : EventWriteRequest
 {
     public int EventId { get; set; }
+    public IFormFile? BannerFile { get; set; }
+    public List<EventImageResponse> Images { get; set; } = [];
     public List<LocationResponse> Locations { get; set; } = [];
     public List<EventTypeResponse> Types { get; set; } = [];
 }

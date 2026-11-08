@@ -14,7 +14,7 @@ public class EventsController(RaceDayApi api) : Controller
         if (!string.IsNullOrWhiteSpace(city)) events = events.Where(e => e.City.Contains(city, StringComparison.OrdinalIgnoreCase)).ToList();
         return View(new BrowsePage { Events = events, Types = await api.GetAsync<List<EventTypeResponse>>("api/event-types"), Search = search, TypeId = typeId, City = city });
     }
-    public async Task<IActionResult> Details(int id) => View(new EventDetailsPage { Event = await api.GetAsync<EventDetailResponse>($"api/events/{id}") });
+    public async Task<IActionResult> Details(int id) => View(await DetailPage(id));
     [HttpPost, RaceDay.Web.Security.RequireRole("Participant")]
     public async Task<IActionResult> Enter(int id, CreateEnrolmentRequest model)
     {
@@ -29,6 +29,13 @@ public class EventsController(RaceDayApi api) : Controller
             catch (ApiException ex) when (ex.StatusCode is System.Net.HttpStatusCode.BadRequest or System.Net.HttpStatusCode.Conflict)
             { ModelState.AddModelError("", ex.Message); }
         }
-        return View("Details", new EventDetailsPage { Event = await api.GetAsync<EventDetailResponse>($"api/events/{id}"), CategoryId = model.CategoryId });
+        var page = await DetailPage(id);
+        page.CategoryId = model.CategoryId;
+        return View("Details", page);
     }
+    private async Task<EventDetailsPage> DetailPage(int id) => new()
+    {
+        Event = await api.GetAsync<EventDetailResponse>($"api/events/{id}"),
+        Images = await api.GetAsync<List<EventImageResponse>>($"api/events/{id}/images")
+    };
 }
