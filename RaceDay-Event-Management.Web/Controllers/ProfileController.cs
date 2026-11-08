@@ -8,6 +8,11 @@ namespace RaceDay.Web.Controllers;
 public class ProfileController(RaceDayApi api) : Controller
 {
     public async Task<IActionResult> Index() => View(ToPage(await api.GetAsync<UserResponse>("api/users/me")));
+    public async Task<IActionResult> Picture()
+    {
+        var file = await api.DownloadAsync("api/users/me/picture");
+        return File(file.Bytes, file.ContentType);
+    }
     [HttpPost]
     public async Task<IActionResult> Index(ProfilePage model)
     {
@@ -20,7 +25,13 @@ public class ProfileController(RaceDayApi api) : Controller
         {
             var user = (await api.SendAsync<UserResponse>(HttpMethod.Put, "api/users/me", new UpdateProfileRequest { FirstName = model.FirstName, LastName = model.LastName, PhoneNumber = model.PhoneNumber, ProfilePictureUrl = current.ProfilePictureUrl }))!;
             HttpContext.Session.SetString(WebSession.Name, user.FirstName);
-            TempData["Success"] = "Your profile has been updated.";
+            if (model.PictureFile is not null)
+            {
+                try { await api.UploadAsync<UserResponse>("api/users/me/picture", model.PictureFile); }
+                catch (ApiException ex) when ((int)ex.StatusCode >= 400 && ex.StatusCode != System.Net.HttpStatusCode.Unauthorized)
+                { TempData["Error"] = "Your details were saved, but your picture could not be uploaded. Choose a supported image up to 5 MB and retry."; }
+            }
+            TempData["Success"] = "Your profile details have been updated.";
             return RedirectToAction(nameof(Index));
         }
         catch (ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.BadRequest)

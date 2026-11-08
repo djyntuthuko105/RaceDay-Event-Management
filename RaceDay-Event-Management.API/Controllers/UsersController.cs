@@ -88,6 +88,39 @@ public class UsersController : ControllerBase
         return Ok(Responses.User(user));
     }
 
+    [HttpPost("me/picture")]
+    [RequireSession]
+    [Consumes("multipart/form-data")]
+    [RequestSizeLimit(6 * 1024 * 1024)]
+    public async Task<IActionResult> UploadPicture([FromForm] ImageUploadRequest request,
+        [FromServices] RaceDay_Event_Management.API.Storage.EventImageStorage storage, CancellationToken cancellationToken)
+    {
+        var user = await FindCurrentUser(cancellationToken);
+        if (user is null) return Unauthorized();
+        if (request.File is null) return BadRequest(new ApiMessage("Choose a profile image."));
+        try
+        {
+            var image = await storage.SaveImageAsync($"profiles/{user.UserId}", request.File, cancellationToken);
+            user.ProfilePictureUrl = image.Url;
+            await _db.SaveChangesAsync(cancellationToken);
+            return Ok(Responses.User(user));
+        }
+        catch (InvalidOperationException ex) { return BadRequest(new ApiMessage(ex.Message)); }
+    }
+
+    [HttpGet("me/picture")]
+    [RequireSession]
+    public async Task<IActionResult> Picture([FromServices] RaceDay_Event_Management.API.Storage.EventImageStorage storage, CancellationToken cancellationToken)
+    {
+        var user = await FindCurrentUser(cancellationToken);
+        if (user?.ProfilePictureUrl is null) return NotFound();
+        var stream = await storage.OpenAsync(user.ProfilePictureUrl, cancellationToken);
+        if (stream is null) return NotFound();
+        var type = Path.GetExtension(new Uri(new Uri("http://localhost"), user.ProfilePictureUrl).AbsolutePath).ToLowerInvariant() switch
+        { ".jpg" or ".jpeg" => "image/jpeg", ".gif" => "image/gif", ".webp" => "image/webp", _ => "image/png" };
+        return File(stream, type);
+    }
+
     private Task<User?> FindCurrentUser(CancellationToken cancellationToken)
     {
         var userId = SessionReader.UserId(HttpContext);

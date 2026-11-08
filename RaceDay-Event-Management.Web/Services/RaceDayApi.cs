@@ -21,9 +21,19 @@ public class RaceDayApi(HttpClient client, IHttpContextAccessor accessor)
     {
         using var form = new MultipartFormDataContent();
         var stream = new StreamContent(file.OpenReadStream());
-        stream.Headers.ContentType = MediaTypeHeaderValue.Parse(file.ContentType);
+        stream.Headers.ContentType = MediaTypeHeaderValue.TryParse(file.ContentType, out var mediaType) ? mediaType : new MediaTypeHeaderValue("application/octet-stream");
         form.Add(stream, "File", Path.GetFileName(file.FileName));
         return await SendContentAsync<T>(HttpMethod.Post, path, form);
+    }
+    public async Task<(byte[] Bytes, string ContentType)> DownloadAsync(string path)
+    {
+        var context = accessor.HttpContext!;
+        using var request = new HttpRequestMessage(HttpMethod.Get, path);
+        var cookie = context.Session.GetString(CookieKey);
+        if (cookie is not null) request.Headers.Add("Cookie", cookie);
+        using var response = await client.SendAsync(request, context.RequestAborted);
+        if (!response.IsSuccessStatusCode) throw new ApiException(response.StatusCode, "This image could not be loaded.");
+        return (await response.Content.ReadAsByteArrayAsync(context.RequestAborted), response.Content.Headers.ContentType?.MediaType ?? "image/png");
     }
     private async Task<T?> SendContentAsync<T>(HttpMethod method, string path, HttpContent? content)
     {
