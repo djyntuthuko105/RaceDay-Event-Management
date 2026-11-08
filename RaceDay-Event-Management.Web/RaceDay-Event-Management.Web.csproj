@@ -5,4 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>RaceDay.Web</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../RaceDay-Event-Management.API/Contracts/ApiContracts.cs" Link="Models/ApiContracts.cs" />
+  </ItemGroup>
 </Project>
