@@ -6,3 +6,9 @@ public class EventFormPage : EventWriteRequest
     public List<LocationResponse> Locations { get; set; } = [];
     public List<EventTypeResponse> Types { get; set; } = [];
 }
+
+public class CategoryPage : CategoryWriteRequest
+{
+    public int CategoryId { get; set; }
+    public EventDetailResponse Event { get; set; } = new();
+}
