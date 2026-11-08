@@ -12,6 +12,7 @@ public class BrowsePage
 public class EventDetailsPage
 {
     public EventDetailResponse Event { get; set; } = new();
+    public RaceConditionsResponse Conditions { get; set; } = new();
     public int CategoryId { get; set; }
     public List<EventImageResponse> Images { get; set; } = [];
 }

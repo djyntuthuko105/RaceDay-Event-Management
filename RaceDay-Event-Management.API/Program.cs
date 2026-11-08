@@ -26,6 +26,12 @@ builder.Services.AddSession(options =>
 });
 
 builder.Services.AddScoped<EventImageStorage>();
+builder.Services.AddMemoryCache();
+builder.Services.AddHttpClient<RaceDay_Event_Management.API.Services.CurrentConditionsService>(client =>
+{
+    client.BaseAddress = new Uri("https://api.open-meteo.com/");
+    client.Timeout = TimeSpan.FromSeconds(4);
+});
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>

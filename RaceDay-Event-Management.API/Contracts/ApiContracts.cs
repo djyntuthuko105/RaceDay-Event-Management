@@ -117,8 +117,10 @@ public class LocationWriteRequest
     [MaxLength(10)]
     public string? PostalCode { get; set; }
 
+    [Range(-90, 90)]
     public decimal? Latitude { get; set; }
 
+    [Range(-180, 180)]
     public decimal? Longitude { get; set; }
 }
 
@@ -367,4 +369,14 @@ public class OrganiserEventResponse
 {
     public EventResponse Event { get; set; } = new();
     public int TotalEnrolments { get; set; }
+}
+
+public class RaceConditionsResponse
+{
+    public decimal? TemperatureCelsius { get; set; }
+    public decimal? WindSpeedKmh { get; set; }
+    public string? Condition { get; set; }
+    public DateTimeOffset? ObservedAt { get; set; }
+    public string DirectionsUrl { get; set; } = "";
+    public string Notice { get; set; } = "Current weather is unavailable. Please check again later.";
 }

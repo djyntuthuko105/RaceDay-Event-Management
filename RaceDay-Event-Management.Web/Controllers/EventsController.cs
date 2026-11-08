@@ -36,6 +36,7 @@ public class EventsController(RaceDayApi api) : Controller
     private async Task<EventDetailsPage> DetailPage(int id) => new()
     {
         Event = await api.GetAsync<EventDetailResponse>($"api/events/{id}"),
+        Conditions = await api.GetAsync<RaceConditionsResponse>($"api/events/{id}/conditions"),
         Images = await api.GetAsync<List<EventImageResponse>>($"api/events/{id}/images")
     };
 }
