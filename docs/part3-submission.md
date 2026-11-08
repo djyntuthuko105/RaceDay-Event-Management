@@ -57,7 +57,7 @@ The completion audit added three additional API/MVC role and ownership regressio
 
 ## Evidence boundaries
 
-- The README includes the genuine historical Part 1 green-build screenshot, clearly labelled as historical, and a direct successful Part 3 SQL Server run link. No screenshot was fabricated or replaced with a badge.
-- Azurite proves the actual Azure SDK round-trip, not a live Azure upload. No project-specific Azure account or connection string has been supplied. Real-cloud evidence requires an existing approved RaceDay development account/container and securely provided API-only configuration before an approved test upload.
+- The README embeds a genuine GUI screenshot of successful Part 3 run 42536138207, explicitly identifying verified source commit 5eb8592 and linking the exact run. It is not presented as evidence for subsequent screenshot/documentation commits. Historical Part 1 evidence remains preserved. No screenshot was fabricated or replaced with a badge.
+- Live Azure setup was deliberately skipped by the user. Azurite proves the actual Azure SDK round-trip, not a live Azure upload. No cloud resource was provisioned or accessed.
 - The GUI live-preview failure remains unresolved; its root cause has not been established. Offline captures are real rendered app output but do not establish live browser navigation.
 - No live database/cloud resource was modified or provisioned. Local and CI databases are disposable coursework fixtures.
