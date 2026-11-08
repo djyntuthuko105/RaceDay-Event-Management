@@ -1,0 +1,9 @@
+@model LoginRequest
+@{ ViewData["Title"] = "Log in"; }
+<div class="auth-grid"><section class="auth-story"><p class="eyebrow">WELCOME TO RACEDAY</p><h1>Every great race<br />starts with you.</h1><p>Your events, entries and personal bests. All in one place.</p><span class="sport-label">RUN / WALK / CYCLE</span></section>
+<section class="card form-card"><p class="eyebrow">GOOD TO HAVE YOU BACK</p><h2>Log in to RaceDay</h2>
+@if (ViewData["Notice"] is string notice) { <p role="status">@notice</p> }
+<form asp-action="Login" method="post"><div asp-validation-summary="All" role="alert"></div>
+<label asp-for="Email">Email address</label><input asp-for="Email" type="email" autocomplete="username" class="form-control" required />
+<label asp-for="Password">Password</label><input asp-for="Password" type="password" autocomplete="current-password" class="form-control" required />
+<button class="btn btn-primary" type="submit">Log in</button></form><p>New to RaceDay? <a asp-action="Register">Create an account</a></p></section></div>

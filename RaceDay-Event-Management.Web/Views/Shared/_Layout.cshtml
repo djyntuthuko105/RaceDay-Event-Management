@@ -1,3 +1,4 @@
+@using RaceDay.Web.Security
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,8 +15,20 @@
     <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav">Menu</button>
     <nav id="main-nav" aria-label="Main navigation">
         <a asp-controller="Events" asp-action="Index">Explore events</a>
-        <a asp-controller="Account" asp-action="Login">Log in</a>
-        <a class="btn btn-primary" asp-controller="Account" asp-action="Register">Join RaceDay</a>
+        @if (Context.Session.GetInt32(WebSession.UserId) is not null)
+        {
+            @if (Context.Session.GetString(WebSession.Role) == "Organiser")
+            { <a asp-controller="Organiser" asp-action="Index">Dashboard</a><a asp-controller="Organiser" asp-action="Events">Manage events</a> }
+            else
+            { <a asp-controller="Participant" asp-action="Events">My events</a><a asp-controller="Participant" asp-action="Results">My results</a> }
+            <a asp-controller="Profile" asp-action="Index">Profile</a>
+            <form asp-controller="Account" asp-action="Logout" method="post"><button class="btn btn-outline-dark" type="submit">Log out</button></form>
+        }
+        else
+        {
+            <a asp-controller="Account" asp-action="Login">Log in</a>
+            <a class="btn btn-primary" asp-controller="Account" asp-action="Register">Join RaceDay</a>
+        }
     </nav>
 </header>
 <main id="main" class="page-shell">
