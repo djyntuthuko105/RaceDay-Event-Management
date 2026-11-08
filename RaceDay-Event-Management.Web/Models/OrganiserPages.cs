@@ -12,3 +12,10 @@ public class CategoryPage : CategoryWriteRequest
     public int CategoryId { get; set; }
     public EventDetailResponse Event { get; set; } = new();
 }
+
+public class EnrolmentPage
+{
+    public EventDetailResponse Event { get; set; } = new();
+    public List<EnrolmentResponse> Enrolments { get; set; } = [];
+    public List<ResultResponse> Results { get; set; } = [];
+}

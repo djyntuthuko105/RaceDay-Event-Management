@@ -267,6 +267,8 @@ public class RaceDayApiTests : IClassFixture<RaceDayApiFactory>
         await AssertStatus(enrolment, HttpStatusCode.Created);
         var enrolmentId = (await ReadJson(enrolment)).GetProperty("enrolmentId").GetInt32();
 
+        await FinishEvent(organiser, eventId);
+
         await AssertStatus(
             await organiser.PostAsJsonAsync($"/api/enrolments/{enrolmentId}/result", new
             {
@@ -300,6 +302,8 @@ public class RaceDayApiTests : IClassFixture<RaceDayApiFactory>
         await AssertStatus(enrolment, HttpStatusCode.Created);
         var enrolmentId = (await ReadJson(enrolment)).GetProperty("enrolmentId").GetInt32();
 
+        await FinishEvent(organiser, eventId);
+
         var recorded = await organiser.PostAsJsonAsync($"/api/enrolments/{enrolmentId}/result", new
         {
             finishTime = "00:42:15",
@@ -321,6 +325,8 @@ public class RaceDayApiTests : IClassFixture<RaceDayApiFactory>
         var (eventId, categoryId) = await CreateEventWithCategory(organiser);
         var firstId = await Enrol(eventId, categoryId);
         var secondId = await Enrol(eventId, categoryId);
+
+        await FinishEvent(organiser, eventId);
 
         await AssertStatus(
             await organiser.PostAsJsonAsync($"/api/enrolments/{firstId}/result", new
@@ -347,6 +353,8 @@ public class RaceDayApiTests : IClassFixture<RaceDayApiFactory>
         var enrolment = await owner.PostAsJsonAsync($"/api/events/{eventId}/enrolments", new { categoryId });
         await AssertStatus(enrolment, HttpStatusCode.Created);
         var enrolmentId = (await ReadJson(enrolment)).GetProperty("enrolmentId").GetInt32();
+
+        await FinishEvent(organiser, eventId);
 
         var recorded = await organiser.PostAsJsonAsync($"/api/enrolments/{enrolmentId}/result", new
         {
@@ -605,6 +613,14 @@ public class RaceDayApiTests : IClassFixture<RaceDayApiFactory>
 
     private static string NewEmail(string prefix) =>
         $"{prefix}.{Guid.NewGuid():N}@raceday.test";
+
+    private static async Task FinishEvent(HttpClient organiser, int eventId)
+    {
+        var details = (await organiser.GetFromJsonAsync<RaceDay_Event_Management.API.Contracts.EventWriteRequest>($"/api/events/{eventId}"))!;
+        details.EventDate = DateOnly.FromDateTime(DateTime.Today.AddDays(-1));
+        details.RegistrationDeadline = details.EventDate.AddDays(-1);
+        await AssertStatus(await organiser.PutAsJsonAsync($"/api/events/{eventId}", details), HttpStatusCode.OK);
+    }
 
     private static async Task AssertStatus(HttpResponseMessage response, HttpStatusCode expected)
     {

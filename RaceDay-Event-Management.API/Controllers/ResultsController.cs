@@ -49,6 +49,11 @@ public class ResultsController : ControllerBase
         if (enrolment.Event.OrganiserId != SessionReader.UserId(HttpContext))
             return StatusCode(StatusCodes.Status403Forbidden, new ApiMessage("You can only record results for your own events."));
 
+        if (enrolment.Event.EventDate >= DateOnly.FromDateTime(DateTime.Today))
+            return Conflict(new ApiMessage("Results can only be recorded after the event date."));
+        if (request.FinishTime == TimeOnly.MinValue)
+            return BadRequest(new ApiMessage("Finish time must be greater than zero."));
+
         if (enrolment.Result is not null)
             return Conflict(new ApiMessage("A result has already been recorded for this enrolment."));
 
@@ -190,6 +195,8 @@ public class ResultsController : ControllerBase
     [ProducesResponseType(typeof(ApiMessage), StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Update(int id, ResultWriteRequest request, CancellationToken cancellationToken)
     {
+        if (request.FinishTime == TimeOnly.MinValue)
+            return BadRequest(new ApiMessage("Finish time must be greater than zero."));
         var result = await _db.Results
             .Include(item => item.Enrolment)
             .ThenInclude(enrolment => enrolment.Event)
