@@ -494,3 +494,6 @@ appsettings.Local.json
 TestResults/
 **/wwwroot/event-images/**
 !**/wwwroot/event-images/.gitkeep
+
+__pycache__/
+*.pyc

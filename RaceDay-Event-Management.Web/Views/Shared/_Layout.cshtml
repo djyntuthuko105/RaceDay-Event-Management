@@ -12,18 +12,24 @@
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header">
-    <a class="brand" asp-controller="Events" asp-action="Index">RACE<span>DAY</span><small>FIND YOUR NEXT START LINE.</small></a>
+    <a class="brand" asp-controller="Events" asp-action="Index">RACE<span>DAY</span>
+<small>FIND YOUR NEXT START LINE.</small>
+</a>
     <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav">Menu</button>
     <nav id="main-nav" aria-label="Main navigation">
         <a asp-controller="Events" asp-action="Index">Explore events</a>
         @if (Context.Session.GetInt32(WebSession.UserId) is not null)
         {
             @if (Context.Session.GetString(WebSession.Role) == "Organiser")
-            { <a asp-controller="Organiser" asp-action="Index">Dashboard</a><a asp-controller="Organiser" asp-action="Events">Manage events</a> }
+            { <a asp-controller="Organiser" asp-action="Index">Dashboard</a>
+<a asp-controller="Organiser" asp-action="Events">Manage events</a> }
             else
-            { <a asp-controller="Participant" asp-action="Events">My events</a><a asp-controller="Participant" asp-action="Results">My results</a> }
+            { <a asp-controller="Participant" asp-action="Events">My events</a>
+<a asp-controller="Participant" asp-action="Results">My results</a> }
             <a asp-controller="Profile" asp-action="Index">Profile</a>
-            <form asp-controller="Account" asp-action="Logout" method="post"><button class="btn btn-outline-dark" type="submit">Log out</button></form>
+            <form asp-controller="Account" asp-action="Logout" method="post">
+<button class="btn btn-outline-dark" type="submit">Log out</button>
+</form>
         }
         else
         {
@@ -37,8 +43,13 @@
     @if (TempData["Error"] is string error) { <div class="notice danger" role="alert">@error</div> }
     @RenderBody()
 </main>
-<footer class="site-footer"><strong>RACEDAY</strong><span>Run. Walk. Cycle. Your next chapter starts here.</span><span>Built for South Africa.</span></footer>
-<script src="~/js/site.js" asp-append-version="true" defer></script>
+<footer class="site-footer">
+<strong>RACEDAY</strong>
+<span>Run. Walk. Cycle. Your next chapter starts here.</span>
+<span>Built for South Africa.</span>
+</footer>
+<script src="~/js/site.js" asp-append-version="true" defer>
+</script>
 @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

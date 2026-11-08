@@ -1,5 +1,44 @@
 @model List<EnrolmentResponse>
 @{ ViewData["Title"] = "My events"; }
-<div class="section-heading"><div><p class="eyebrow">YOUR RACE CALENDAR</p><h1>My events</h1><p>Your next challenge, already on the calendar.</p></div><a class="btn btn-primary" asp-controller="Events" asp-action="Index">Find another event</a></div>
-@if (Model.Count == 0) { <div class="empty-state card"><h2>Your next chapter starts here.</h2><p>You haven't entered any events yet.</p><a asp-controller="Events" asp-action="Index">Explore upcoming events</a></div> }
-else { <div class="table-responsive card"><table class="table"><caption>Your race entries and their current status</caption><thead><tr><th>Event</th><th>Race date</th><th>Category</th><th>Status</th><th>Manage</th></tr></thead><tbody>@foreach (var entry in Model) { <tr><td><a asp-controller="Events" asp-action="Details" asp-route-id="@entry.EventId">@entry.EventName</a></td><td>@entry.EventDate.ToString("dd MMM yyyy")</td><td>@entry.CategoryName</td><td><partial name="_Status" model="entry.Status" /></td><td>@if (entry.Status != "Completed" && entry.EventDate > DateOnly.FromDateTime(DateTime.Today)) { <form asp-action="Cancel" asp-route-id="@entry.EnrolmentId" method="post" data-confirm="Cancel this event entry? You can re-enter if places remain."><button class="btn btn-sm btn-outline-danger" type="submit">Cancel entry</button></form> }</td></tr> }</tbody></table></div> }
+<div class="section-heading">
+<div>
+<p class="eyebrow">YOUR RACE CALENDAR</p>
+<h1>My events</h1>
+<p>Your next challenge, already on the calendar.</p>
+</div>
+<a class="btn btn-primary" asp-controller="Events" asp-action="Index">Find another event</a>
+</div>
+@if (Model.Count == 0) { <div class="empty-state card">
+<h2>Your next chapter starts here.</h2>
+<p>You haven't entered any events yet.</p>
+<a asp-controller="Events" asp-action="Index">Explore upcoming events</a>
+</div> }
+else { <div class="table-responsive card">
+<table class="table">
+<caption>Your race entries and their current status</caption>
+<thead>
+<tr>
+<th>Event</th>
+<th>Race date</th>
+<th>Category</th>
+<th>Status</th>
+<th>Manage</th>
+</tr>
+</thead>
+<tbody>
+@foreach (var entry in Model) { <tr>
+<td>
+<a asp-controller="Events" asp-action="Details" asp-route-id="@entry.EventId">@entry.EventName</a>
+</td>
+<td>@entry.EventDate.ToString("dd MMM yyyy")</td>
+<td>@entry.CategoryName</td>
+<td>
+<partial name="_Status" model="entry.Status" />
+</td>
+<td>
+@if (entry.Status != "Completed" && entry.EventDate > DateOnly.FromDateTime(DateTime.Today)) { <form asp-action="Cancel" asp-route-id="@entry.EnrolmentId" method="post" data-confirm="Cancel this event entry? You can re-enter if places remain.">
+<button class="btn btn-sm btn-outline-danger" type="submit">Cancel entry</button>
+</form> }</td>
+</tr> }</tbody>
+</table>
+</div> }

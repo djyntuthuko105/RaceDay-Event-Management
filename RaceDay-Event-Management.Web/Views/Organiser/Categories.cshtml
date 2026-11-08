@@ -1,10 +1,40 @@
 @model CategoryPage
 @{ ViewData["Title"] = "Race categories"; }
-<a class="back-link" asp-action="Events">← Manage events</a><p class="eyebrow">@Model.Event.EventName</p><h1>Race categories</h1><div class="detail-grid"><section class="card padded"><h2>Available categories</h2>@if (Model.Event.Categories.Count == 0) { <p>No categories yet. Add an age or distance category to open entries.</p> } else { <ul class="category-list">@foreach (var category in Model.Event.Categories) { <li><div><strong>@category.CategoryName</strong><p>@(category.CategoryDistanceKm?.ToString("0.#") ?? Model.Event.DistanceKm.ToString("0.#")) km · Capacity: @(category.MaximumParticipants?.ToString() ?? "No limit")</p></div><div class="action-links"><a asp-action="Categories" asp-route-id="@Model.Event.EventId" asp-route-categoryId="@category.CategoryId">Edit</a><form asp-action="DeleteCategory" asp-route-id="@Model.Event.EventId" asp-route-categoryId="@category.CategoryId" method="post" data-confirm="Delete this category? Categories with entries cannot be deleted."><button class="btn btn-sm btn-outline-danger" type="submit">Delete</button></form></div></li> }</ul> }</section>
-<section class="card form-card"><h2>@(Model.CategoryId > 0 ? "Edit category" : "Add category")</h2><form asp-action="Categories" asp-route-id="@Model.Event.EventId" asp-route-categoryId="@(Model.CategoryId > 0 ? Model.CategoryId : (int?)null)" method="post"><div asp-validation-summary="All" role="alert"></div>
-<label asp-for="CategoryName">Category name</label><input asp-for="CategoryName" class="form-control" required maxlength="100" placeholder="e.g. Senior 10 km" />
-<label asp-for="MinimumAge">Minimum age (optional)</label><input asp-for="MinimumAge" class="form-control" type="number" min="0" max="120" />
-<label asp-for="MaximumAge">Maximum age (optional)</label><input asp-for="MaximumAge" class="form-control" type="number" min="0" max="120" />
-<label asp-for="CategoryDistanceKm">Category distance, km (optional)</label><input asp-for="CategoryDistanceKm" class="form-control" type="number" min="0.01" max="9999.99" step="0.01" />
-<label asp-for="MaximumParticipants">Entry limit (optional)</label><input asp-for="MaximumParticipants" class="form-control" type="number" min="1" max="100000" />
-<button class="btn btn-primary" type="submit">Save category</button>@if (Model.CategoryId > 0) { <a asp-action="Categories" asp-route-id="@Model.Event.EventId">Cancel edit</a> }</form></section></div>
+<a class="back-link" asp-action="Events">← Manage events</a>
+<p class="eyebrow">@Model.Event.EventName</p>
+<h1>Race categories</h1>
+<div class="detail-grid">
+<section class="card padded">
+<h2>Available categories</h2>
+@if (Model.Event.Categories.Count == 0) { <p>No categories yet. Add an age or distance category to open entries.</p> } else { <ul class="category-list">
+@foreach (var category in Model.Event.Categories) { <li>
+<div>
+<strong>@category.CategoryName</strong>
+<p>@(category.CategoryDistanceKm?.ToString("0.#") ?? Model.Event.DistanceKm.ToString("0.#")) km · Capacity: @(category.MaximumParticipants?.ToString() ?? "No limit")</p>
+</div>
+<div class="action-links">
+<a asp-action="Categories" asp-route-id="@Model.Event.EventId" asp-route-categoryId="@category.CategoryId">Edit</a>
+<form asp-action="DeleteCategory" asp-route-id="@Model.Event.EventId" asp-route-categoryId="@category.CategoryId" method="post" data-confirm="Delete this category? Categories with entries cannot be deleted.">
+<button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+</form>
+</div>
+</li> }</ul> }</section>
+<section class="card form-card">
+<h2>@(Model.CategoryId > 0 ? "Edit category" : "Add category")</h2>
+<form asp-action="Categories" asp-route-id="@Model.Event.EventId" asp-route-categoryId="@(Model.CategoryId > 0 ? Model.CategoryId : (int?)null)" method="post">
+<div asp-validation-summary="All" role="alert">
+</div>
+<label asp-for="CategoryName">Category name</label>
+<input asp-for="CategoryName" class="form-control" required maxlength="100" placeholder="e.g. Senior 10 km" />
+<label asp-for="MinimumAge">Minimum age (optional)</label>
+<input asp-for="MinimumAge" class="form-control" type="number" min="0" max="120" />
+<label asp-for="MaximumAge">Maximum age (optional)</label>
+<input asp-for="MaximumAge" class="form-control" type="number" min="0" max="120" />
+<label asp-for="CategoryDistanceKm">Category distance, km (optional)</label>
+<input asp-for="CategoryDistanceKm" class="form-control" type="number" min="0.01" max="9999.99" step="0.01" />
+<label asp-for="MaximumParticipants">Entry limit (optional)</label>
+<input asp-for="MaximumParticipants" class="form-control" type="number" min="1" max="100000" />
+<button class="btn btn-primary" type="submit">Save category</button>
+@if (Model.CategoryId > 0) { <a asp-action="Categories" asp-route-id="@Model.Event.EventId">Cancel edit</a> }</form>
+</section>
+</div>

@@ -1,7 +1,35 @@
 @model List<OrganiserEventResponse>
 @using RaceDay.Web.Security
 @{ ViewData["Title"] = "Organiser dashboard"; var upcoming = Model.Where(item => item.Event.EventDate >= DateOnly.FromDateTime(DateTime.Today)).OrderBy(item => item.Event.EventDate).ToList(); }
-<div class="section-heading"><div><p class="eyebrow">ORGANISER WORKSPACE</p><h1>Let's make race day happen.</h1><p>Welcome back, @Context.Session.GetString(WebSession.Name). Here's your event overview.</p></div><a class="btn btn-primary" asp-action="Create">Create event</a></div>
-<div class="stats-grid"><div class="stat-card"><span>Your events</span><strong>@Model.Count</strong></div><div class="stat-card"><span>Total entries</span><strong>@Model.Sum(item => item.TotalEnrolments)</strong></div><div class="stat-card"><span>Upcoming races</span><strong>@upcoming.Count</strong></div></div>
-<div class="section-heading"><h2>Your events</h2><a asp-action="Events">Manage all events →</a></div><partial name="_OrganiserEvents" model="Model" />
-@if (upcoming.Count > 0) { <div class="next-race"><p class="eyebrow">NEXT ON YOUR CALENDAR</p><h2>@upcoming[0].Event.EventName</h2><p>@upcoming[0].Event.EventDate.ToString("dddd, dd MMMM yyyy") · @upcoming[0].Event.City</p></div> }
+<div class="section-heading">
+<div>
+<p class="eyebrow">ORGANISER WORKSPACE</p>
+<h1>Let's make race day happen.</h1>
+<p>Welcome back, @Context.Session.GetString(WebSession.Name). Here's your event overview.</p>
+</div>
+<a class="btn btn-primary" asp-action="Create">Create event</a>
+</div>
+<div class="stats-grid">
+<div class="stat-card">
+<span>Your events</span>
+<strong>@Model.Count</strong>
+</div>
+<div class="stat-card">
+<span>Total entries</span>
+<strong>@Model.Sum(item => item.TotalEnrolments)</strong>
+</div>
+<div class="stat-card">
+<span>Upcoming races</span>
+<strong>@upcoming.Count</strong>
+</div>
+</div>
+<div class="section-heading">
+<h2>Your events</h2>
+<a asp-action="Events">Manage all events →</a>
+</div>
+<partial name="_OrganiserEvents" model="Model" />
+@if (upcoming.Count > 0) { <div class="next-race">
+<p class="eyebrow">NEXT ON YOUR CALENDAR</p>
+<h2>@upcoming[0].Event.EventName</h2>
+<p>@upcoming[0].Event.EventDate.ToString("dddd, dd MMMM yyyy") · @upcoming[0].Event.City</p>
+</div> }

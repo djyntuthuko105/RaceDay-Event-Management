@@ -15,6 +15,7 @@ COPY --from=build --chown=app:app /out/api .
 RUN mkdir -p /app/data /app/wwwroot/event-images && chown -R app:app /app/data /app/wwwroot/event-images
 USER app
 ENV ASPNETCORE_HTTP_PORTS=8080
+ENV TZ=Africa/Johannesburg
 EXPOSE 8080
 ENTRYPOINT ["dotnet", "RaceDay-Event-Management.API.dll"]
 
@@ -23,5 +24,6 @@ WORKDIR /app
 COPY --from=build --chown=app:app /out/web .
 USER app
 ENV ASPNETCORE_HTTP_PORTS=8080
+ENV TZ=Africa/Johannesburg
 EXPOSE 8080
 ENTRYPOINT ["dotnet", "RaceDay-Event-Management.Web.dll"]

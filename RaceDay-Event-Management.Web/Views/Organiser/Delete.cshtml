@@ -1,3 +1,13 @@
 @model EventDetailResponse
 @{ ViewData["Title"] = "Delete event"; }
-<section class="card form-card narrow"><p class="eyebrow">PLEASE CONFIRM</p><h1>Delete @Model.EventName?</h1><p>This cannot be undone. The API protects events with existing categories, entries, images or weather records; remove related records first where possible. Events with race history should be retained.</p><div asp-validation-summary="All" role="alert"></div><form asp-action="Delete" asp-route-id="@Model.EventId" method="post"><button class="btn btn-danger" type="submit">Delete event permanently</button><a class="btn btn-outline-dark" asp-action="Events">Keep event</a></form></section>
+<section class="card form-card narrow">
+<p class="eyebrow">PLEASE CONFIRM</p>
+<h1>Delete @Model.EventName?</h1>
+<p>This cannot be undone. The API protects events with existing categories, entries, images or weather records; remove related records first where possible. Events with race history should be retained.</p>
+<div asp-validation-summary="All" role="alert">
+</div>
+<form asp-action="Delete" asp-route-id="@Model.EventId" method="post">
+<button class="btn btn-danger" type="submit">Delete event permanently</button>
+<a class="btn btn-outline-dark" asp-action="Events">Keep event</a>
+</form>
+</section>

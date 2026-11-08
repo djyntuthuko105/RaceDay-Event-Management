@@ -1,11 +1,37 @@
 @model RegisterRequest
 @{ ViewData["Title"] = "Create account"; }
-<section class="card form-card narrow"><p class="eyebrow">YOUR NEXT START LINE AWAITS</p><h1>Join the movement.</h1><p>Create your RaceDay account.</p>
-<form asp-action="Register" method="post"><div asp-validation-summary="All" role="alert"></div>
-<div class="row"><div class="col-md-6"><label asp-for="FirstName">First name</label><input asp-for="FirstName" class="form-control" autocomplete="given-name" maxlength="50" required /></div>
-<div class="col-md-6"><label asp-for="LastName">Last name</label><input asp-for="LastName" class="form-control" autocomplete="family-name" maxlength="50" required /></div></div>
-<label asp-for="Email">Email address</label><input asp-for="Email" type="email" class="form-control" autocomplete="email" maxlength="100" required />
-<label asp-for="PhoneNumber">Phone number (optional)</label><input asp-for="PhoneNumber" type="tel" class="form-control" autocomplete="tel" maxlength="20" />
-<label asp-for="Password">Password</label><input asp-for="Password" type="password" class="form-control" autocomplete="new-password" minlength="8" maxlength="100" aria-describedby="password-help" required /><small id="password-help">Use at least 8 characters.</small>
-<label asp-for="Role">I want to</label><select asp-for="Role" class="form-select"><option value="Participant">Take part in events</option><option value="Organiser">Organise events</option></select>
-<p class="help-text">This student project allows self-registration for both roles.</p><button class="btn btn-primary" type="submit">Create account</button></form><p>Already a member? <a asp-action="Login">Log in</a></p></section>
+<section class="card form-card narrow">
+<p class="eyebrow">YOUR NEXT START LINE AWAITS</p>
+<h1>Join the movement.</h1>
+<p>Create your RaceDay account.</p>
+<form asp-action="Register" method="post">
+<div asp-validation-summary="All" role="alert">
+</div>
+<div class="row">
+<div class="col-md-6">
+<label asp-for="FirstName">First name</label>
+<input asp-for="FirstName" class="form-control" autocomplete="given-name" maxlength="50" required />
+</div>
+<div class="col-md-6">
+<label asp-for="LastName">Last name</label>
+<input asp-for="LastName" class="form-control" autocomplete="family-name" maxlength="50" required />
+</div>
+</div>
+<label asp-for="Email">Email address</label>
+<input asp-for="Email" type="email" class="form-control" autocomplete="email" maxlength="100" required />
+<label asp-for="PhoneNumber">Phone number (optional)</label>
+<input asp-for="PhoneNumber" type="tel" class="form-control" autocomplete="tel" maxlength="20" />
+<label asp-for="Password">Password</label>
+<input asp-for="Password" type="password" class="form-control" autocomplete="new-password" minlength="8" maxlength="100" aria-describedby="password-help" required />
+<small id="password-help">Use at least 8 characters.</small>
+<label asp-for="Role">I want to</label>
+<select asp-for="Role" class="form-select">
+<option value="Participant">Take part in events</option>
+<option value="Organiser">Organise events</option>
+</select>
+<p class="help-text">This student project allows self-registration for both roles.</p>
+<button class="btn btn-primary" type="submit">Create account</button>
+</form>
+<p>Already a member? <a asp-action="Login">Log in</a>
+</p>
+</section>

@@ -1,432 +1,166 @@
 # RaceDay
 
-RaceDay is a web-based event management system designed for the South African road running, walking and cycling community.
+An ASP.NET Core MVC event platform for South Africa's running, walking and cycling community. The MVC website consumes the existing Part 2 API for every data operation. SQL Server remains the main database provider; SQLite and Azurite offer a free, self-contained local demo.
 
-The system allows Event Organisers to manage sporting events, categories, participant enrolments and results. Participants can browse events, select categories, enrol for events and track their results.
+## What you can do
 
----
+| Organiser | Participant |
+| --- | --- |
+| View owned events, entry totals and upcoming dates | Browse and filter upcoming events by name, city and sport |
+| Create, edit and safely delete events | Read full event information and available categories |
+| Add venues, upload banners and manage age/distance categories | Enter an event, view entry status and cancel eligible entries |
+| View entrants and publish or correct post-race results | View personal finish times, dates, categories and overall positions |
+| Update profile details and upload a profile picture | Update profile details and upload a profile picture |
 
-## System Roles
+Navigation changes with the logged-in role. The API enforces roles and ownership independently. Statuses include visible text and distinct colours. The responsive interface uses locally bundled Bootstrap, original CSS and local artwork; it has no external UI-service dependency.
 
-### Organiser
-
-Organisers can:
-
-- Create events
-- Edit events
-- Delete events
-- Manage event categories
-- View participant enrolments
-- Capture participant results
-
-### Participant
-
-Participants can:
-
-- Create an account
-- Browse available events
-- View event information
-- Select an event category
-- Enrol for events
-- View their enrolments
-- View their race results
-
----
-
-
-
-## Repository Structure
+## Project structure
 
 ```text
-RaceDay-Event-Management/
-│
-├── .github/
-│   └── workflows/
-│       ├── ci.yml
-│       └── part1-repocheck.yml
-│
-├── docs/
-│   ├── api_endpoint_plan.md
-│   ├── erd.png
-│   ├── RaceDayDatabase.sql
-│   └── CI.png
-│
-├── RaceDay-Event-Management.API/
-├── RaceDay-Event-Management.API.Tests/
-│
-└── README.md
+RaceDay-Event-Management.API/        Existing API, EF Core, sessions and image storage
+RaceDay-Event-Management.Web/        MVC controllers, Razor views, API client and UI
+RaceDay-Event-Management.API.Tests/  API integration and weather tests
+RaceDay-Event-Management.Web.Tests/ Complete MVC/API journeys and security checks
+docs/                              Preserved Part 1 files and submission guidance
+scripts/smoke.py                    Real local MVC/API/Blob HTTP smoke check
+Dockerfile                         Separate non-root API and MVC runtime targets
+compose.yml                        Free local SQLite and Azurite demo stack
+compose.sqlserver.yml              Optional SQL Server overlay
 ```
 
----
+The original ERD, SQL script, endpoint plan, Part 2 migrations and existing API tests are retained. [Earlier submission notes](docs/part1-part2-readme.md) remain available. The MVC project links only the API's request/response DTO source; it has no EF Core reference or database connection.
 
+## Quick start with Docker
 
+Install Docker Engine/Desktop with Compose v2. From the repository root:
 
-## Part 1 - System Planning and Database
-
-Part 1 contains the planning and database components for the RaceDay system.
-
-The following deliverables have been completed:
-
-- Entity Relationship Diagram (ERD)
-- REST API Endpoint Plan
-- SQL Database Script
-- GitHub repository setup
-- GitHub Actions validation workflow
-
----
-
-
-
-## Entity Relationship Diagram
-
-The RaceDay database contains the following entities:
-
-- Users
-- EventTypes
-- Locations
-- Events
-- Categories
-- Enrolments
-- Results
-- EventImages
-- WeatherSnapshots
-
-The ERD includes the entity attributes, primary keys, foreign keys and relationships between the entities.
-
-
-**Below is the RaceDay ERD:**
-
-
-
-![](docs/erd.png)
-
----
-
-
-
-## API Endpoint Plan
-
-The API Endpoint Plan defines the REST API for the RaceDay system.
-
-The plan includes:
-
-- HTTP Method
-- Route
-- Description
-- Role Required
-- Request Body
-- Expected Response
-
-The endpoint plan covers the main system functionality, including authentication, user profiles, events, categories, enrolments and results.
-
-The completed API Endpoint Plan is available at:
-
-```text
-docs/api_endpoint_plan.md
+```bash
+docker compose up --build -d
 ```
 
----
+- Website: http://localhost:5000
+- API Swagger: http://localhost:5080/swagger
+- API readiness: http://localhost:5080/health
 
+This starts MVC, API, a persistent SQLite demo database and Azurite Blob Storage. It does not contact a live Azure account or provision paid resources. The sample emulator account/key in Compose is intentionally local and is not an Azure credential.
 
+To run the MVC container directly after the stack has built its image:
 
-## SQL Database
-
-The RaceDay database was created using Microsoft SQL Server.
-
-The SQL script contains:
-
-- Database creation
-- Table creation
-- Primary keys
-- Foreign keys
-- NOT NULL constraints
-- UNIQUE constraints
-- DEFAULT constraints
-- CHECK constraints
-- Sample data
-
-The database contains the following tables:
-
-
-| Table            | Purpose                                        |
-| ---------------- | ---------------------------------------------- |
-| Users            | Stores Organiser and Participant information   |
-| EventTypes       | Stores event types such as Run, Walk and Cycle |
-| Locations        | Stores event location information              |
-| Events           | Stores RaceDay event information               |
-| Categories       | Stores categories for each event               |
-| Enrolments       | Links Participants to events and categories    |
-| Results          | Stores participant finish times and positions  |
-| EventImages      | Stores event image information                 |
-| WeatherSnapshots | Stores weather information related to events   |
-
-
-The database includes sample data for:
-
-- 2 Organisers
-- 2 Participants
-- 3 Events
-- Categories for each event
-- Sample enrolments
-- Sample results
-- Event images
-- Weather information
-
-The completed SQL script is available at:
-
-```text
-docs/RaceDayDatabase.sql
+```bash
+docker build --target web -t raceday-web .
+docker run --rm -p 5001:8080 --network raceday-part3_default -e Api__BaseUrl=http://api:8080/ raceday-web
 ```
 
----
+The direct command expects the Compose API to be running. Open http://localhost:5001. The API and website are separate applications, so the website still requires the API.
 
-
-
-## Running the Database
-
-The database script can be executed using Microsoft SQL Server Management Studio (SSMS).
-
-### Requirements
-
-- Microsoft SQL Server
-- SQL Server Management Studio (SSMS)
-
-
-
-### Steps
-
-1. Open SQL Server Management Studio.
-2. Connect to a SQL Server instance.
-3. Open:
-  ```text
-   docs/RaceDayDatabase.sql
-  ```
-4. Execute the complete script.
-5. The `RaceDayDB` database will be created.
-6. The tables and sample data will be inserted.
-
-The completed database can be viewed under:
-
-```text
-Databases
-└── RaceDayDB
+```bash
+docker compose logs -f
+docker compose down
 ```
 
----
+Stopping the stack preserves database and Blob volumes. Do not remove volumes if you need to keep your work.
 
+### Use SQL Server instead
 
+SQL Server Developer requires a compatible host, adequate memory and acceptance of Microsoft's development licence. Set a strong local `SQL_PASSWORD` environment variable, then run:
 
-## GitHub and Version Control
-
-GitHub is used to manage the RaceDay project and track development progress.
-
-The repository contains more than 20 meaningful commits covering areas such as:
-
-- ERD development
-- Database development
-- API endpoint planning
-- Database relationships
-- Constraints
-- Sample data
-- Repository configuration
-- GitHub Actions
-
----
-
-
-
-## GitHub Actions
-
-GitHub Actions is used to validate the Part 1 repository structure.
-
-The workflow checks that the required documentation files are present:
-
-```text
-docs/
-├── api_endpoint_plan.md
-├── erd.png
-└── RaceDayDatabase.sql
+```bash
+docker compose -f compose.yml -f compose.sqlserver.yml up --build -d
 ```
 
-The workflow is located at:
+The overlay switches the API back to SQL Server, applies the existing EF migrations and uses a separate SQL data volume. Never point demo seeding at a live database. Do not execute the Part 1 planning SQL script on top of an EF-created database; use a separate clean planning database/instance for that demonstration.
 
-```text
-.github/workflows/part1-repocheck.yml
+## Run without Docker
+
+Install the .NET 8 SDK. The following demo uses SQLite and explicitly labelled local file storage, not Azure Blob Storage.
+
+From the repository root, in separate terminals:
+
+```bash
+dotnet restore RaceDay-Event-Management.sln
+dotnet run --project RaceDay-Event-Management.API --no-launch-profile --environment LocalDemo --urls http://localhost:5080
+dotnet run --project RaceDay-Event-Management.Web --no-launch-profile --urls http://localhost:5000
 ```
 
-The workflow completed successfully and produced a green build.
+`LocalDemo` creates `raceday-demo.db` in the API content directory and seeds sample accounts only when the database has no users. SQLite is for local portability; SQL Server is still the default provider outside this explicitly selected demo. The original Visual Studio API launch profiles remain available.
 
-### CI/CD Build
+For your own SQL Server database, provide `ConnectionStrings__RaceDayDb`, keep `Database__Provider=SqlServer`, and run the API without `LocalDemo`. Enable `Database__SeedDemo=true` only on a new, disposable development database. Otherwise demo seeding is off outside Development/LocalDemo.
 
-![](docs/CI.png)
+### Sample accounts
 
----
-
-
-
-## Project Status
-
-
-| Part 1 Component        | Status   |
-| ----------------------- | -------- |
-| ERD                     | Complete |
-| API Endpoint Plan       | Complete |
-| SQL Database Script     | Complete |
-| Repository Structure    | Complete |
-| GitHub Actions Workflow | Complete |
-| CI/CD Validation        | Complete |
-
-
----
-
-
-
-## Conclusion
-
-RaceDay Part 1 has been completed with the required system planning, database design and repository setup.
-
-The ERD, API Endpoint Plan and SQL Database Script provide the foundation for the RaceDay system and are stored together in the `docs` folder.
-
-GitHub is used for version control, while GitHub Actions provides automated validation of the required Part 1 repository structure.
-
----
-
----
-
-## Part 2 - RESTful API Development
-
-Part 2 implements the RESTful API for the RaceDay system using ASP.NET Core 8 Web API. The implementation follows the API specification defined in `docs/api_endpoint_plan.md` and connects to Microsoft SQL Server using Entity Framework Core Code-First.
-
-### Project Locations
-
-- **API Project:** `RaceDay-Event-Management.API/`
-- **Unit Test Project:** `RaceDay-Event-Management.API.Tests/`
-- **Solution File:** `RaceDay-Event-Management.sln`
-
----
-
-### Features and Implementation
-
-1. **Database Integration & EF Core**
-   - Built using ASP.NET Core 8 Web API and EF Core Code-First.
-   - `RaceDayDbContext` maps to the 9 core entities matching the Part 1 database schema (`Users`, `EventTypes`, `Locations`, `Events`, `Categories`, `Enrolments`, `Results`, `EventImages`, `WeatherSnapshots`).
-   - Seeds default categories, locations, event types, events, and sample user accounts.
-
-2. **Authentication & Password Hashing**
-   - Account registration (`POST /api/auth/register`) supporting `Organiser` and `Participant` roles.
-   - Login (`POST /api/auth/login`) with credential validation and session creation.
-   - Password hashing using PBKDF2 with SHA256 key derivation.
-   - Sensitive fields (`PasswordHash`) are excluded from API response contracts (`UserResponse`).
-
-3. **Role-Based Access Control (RBAC)**
-   - Server-side session authentication enforced via custom session filters (`[RequireSession]`).
-   - Role permissions for `Organiser` and `Participant` strictly enforced at API level:
-     - **Organiser:** Create, edit, and delete events; create and manage categories; record and update participant finish times/positions; view enrolments for owned events.
-     - **Participant:** Browse events, view event categories, enrol in events, view personal enrolments, cancel eligible enrolments, and view personal race history.
-
-4. **API Endpoint Coverage**
-   - Implemented **43 RESTful API endpoints** across 10 controllers:
-     - Authentication (4 endpoints)
-     - User Profile (3 endpoints)
-     - Events (6 endpoints)
-     - Event Types (5 endpoints)
-     - Locations (5 endpoints)
-     - Categories (5 endpoints)
-     - Event Enrolments (4 endpoints)
-     - Results (5 endpoints)
-     - Event Images (3 endpoints)
-     - Weather Snapshots (3 endpoints)
-
-5. **Swagger Integration**
-   - Swagger / OpenAPI UI integrated at `/swagger` with XML documentation comments describing endpoints, request models, and expected HTTP status codes.
-
-6. **Unit & Integration Testing**
-   - Test suite containing **27 integration tests** using xUnit and `WebApplicationFactory`.
-   - Tests cover registration, login/logout, password protection, role authorization rejections, event CRUD, category distance checks, capacity limits, enrolment cancellations, and duplicate result position prevention.
-
-7. **Version Control & CI/CD**
-   - Contains over 40 commits tracking project progress.
-   - GitHub Actions workflow (`.github/workflows/ci.yml`) compiles the solution and executes unit tests automatically on push.
-
----
-
-### Database Setup & Connection String
-
-The API connects to SQL Server Express using the connection string in `RaceDay-Event-Management.API/appsettings.json`:
-
-```text
-Server=localhost\SQLEXPRESS;Database=RaceDayDB;Trusted_Connection=True;TrustServerCertificate=True;
-```
-
-If your SQL Server instance uses a different server name, update `appsettings.json` accordingly (e.g., `localhost\SQLEXPRESS01` or `(localdb)\MSSQLLocalDB`).
-
----
-
-### Running the API
-
-From the root repository directory:
-
-```text
-dotnet run --project RaceDay-Event-Management.API
-```
-
-Access Swagger UI in browser:
-
-```text
-http://localhost:5264/swagger
-```
-
-To run using HTTPS launch profile:
-
-```text
-dotnet run --project RaceDay-Event-Management.API --launch-profile https
-```
-
-Access Swagger UI:
-
-```text
-https://localhost:7121/swagger
-```
-
----
-
-### Sample Accounts for Testing
-
-All seeded test accounts use the password: `Password123!`
+All seeded demonstration accounts use `Password123!`. These are disposable coursework examples, not production credentials.
 
 | Email | Role |
-| :--- | :--- |
-| `thabo@raceday.co.za` | Organiser |
-| `naledi@raceday.co.za` | Organiser |
-| `kabelo@example.com` | Participant |
-| `lerato@example.com` | Participant |
+| --- | --- |
+| thabo@raceday.co.za | Organiser |
+| naledi@raceday.co.za | Organiser |
+| kabelo@example.com | Participant |
+| lerato@example.com | Participant |
 
----
+Register your own accounts through the website. Both roles are self-selectable for this coursework; a public production service should approve organiser accounts.
 
-### Running Unit Tests
+## Azure Blob Storage
 
-To run the unit test suite:
+Uploads follow **MVC form → Part 2 API → Blob Storage → saved database URL**. MVC never receives storage credentials or talks to Azure. Banner URLs are saved in `EventImages`; profile URLs are saved in `Users.ProfilePictureUrl`.
 
-```text
-dotnet test RaceDay-Event-Management.sln
+Configure the **API process only** using environment variables:
+
+| Setting | Value |
+| --- | --- |
+| `Storage__Provider` | `AzureBlob` |
+| `Storage__ConnectionString` | Your storage connection string, provided securely at runtime |
+| `Storage__Container` | `raceday-images` or your chosen private container |
+
+The API creates a missing container with private access. Images are displayed via API content endpoints, proxied by MVC; no public-container setting or expiring SAS URL is required. Use a private container in a storage account you control. Do not commit connection strings, keys or `.env` files. No live account has been provisioned or modified as part of the implementation.
+
+JPG, PNG, GIF and WebP uploads are limited to 5 MB, checked for matching file signatures and assigned random filenames. SVG uploads are not accepted. General profile updates cannot inject arbitrary image URLs; use the dedicated picture upload endpoint. Old profile images are retained when replaced; lifecycle cleanup is a future maintenance task. This is basic validation, not a malware scanner.
+
+The default Compose stack selects the same Azure Blob SDK provider against **Azurite**, a local emulator. `Local` file storage remains available for Part 2 compatibility but does not count as live Azure verification. A real Azure account upload still needs to be demonstrated before claiming cloud-hosted storage evidence.
+
+## Race-day behaviour
+
+- Entry deadlines, duplicate entries, category capacity and ownership are validated by the API.
+- Dashboard data includes completed events, not only the public upcoming catalogue.
+- Results open after the event date, because the data model contains a date rather than an exact finish time. Finish times use `HH:mm:ss` and must be greater than zero; positions are unique across the whole event.
+- My Results shows the number of **recorded** finishers. This count grows while the organiser is still entering results; it is not a fabricated final field size.
+- Current weather comes through the API from [Open-Meteo](https://open-meteo.com/) with CC BY 4.0 attribution. It is labelled as current conditions, not a forecast for a distant event date. Requests have a timeout, caching and a clear unavailable state.
+- Venue directions open Google Maps. They are explicitly not a race-course map; official course data has not been supplied.
+- MVC server-side session stores user ID, role and its own API session cookie. HTTP clients do not share a cookie jar between users. Logout clears both sessions. Sessions are in memory, so restarting either application ends active sessions; multi-instance hosting would need a shared session store.
+- Use HTTPS and appropriate secret management for any real deployment. The local container stack is HTTP-only, bound to loopback host ports, and is not a production deployment. Both application images use Africa/Johannesburg (SAST) for date-based rules.
+
+## Build and test
+
+```bash
+dotnet build RaceDay-Event-Management.sln -c Release
+dotnet test RaceDay-Event-Management.sln -c Release
 ```
 
----
+The verified local suite contains **47 passing tests**: 39 API/weather tests and 8 complete MVC/API workflow tests. Existing Part 2 scenarios remain, with result test setup moved to a completed event to match the final-part requirement.
 
-### Part 2 Component Status
+With the local Blob-enabled stack running:
 
-| Part 2 Component | Status |
-| :--- | :--- |
-| API & Database Architecture | Complete |
-| Authentication & Password Security | Complete |
-| Role-Based Access Control | Complete |
-| RESTful Endpoints (43 Endpoints) | Complete |
-| Swagger UI Integration | Complete |
-| Unit Testing Suite (27 Tests) | Complete |
-| GitHub Actions CI/CD | Complete |
+```bash
+python3 scripts/smoke.py
+```
 
----
+This standard-library HTTP check is restricted to local loopback URLs. It creates a disposable organiser account and temporary event, exercises real MVC login, event/banner upload, persisted Blob URLs, image display, profile picture upload and logout, then removes its temporary event and banner. It is an integration check, not a browser screenshot or a replacement for visual testing.
 
-### Author
+## CI and submission evidence
 
-- **Name:** `ST10444612 Mike Thando Ndaba`
+`.github/workflows/ci.yml` now runs on every branch push and pull request. It builds both projects, runs both test suites, builds both Docker targets through Compose, and runs the actual Blob smoke check. The separate Part 1 document validation workflow is retained.
+
+**Part 3 GitHub CI has not yet run for this local branch.** Docker was not installed in the implementation environment, so container execution must still be confirmed on a Docker-capable machine or by the configured workflow after an authorised push. Local .NET builds, all 47 tests and the real Azurite/MVC smoke test passed; these are not claimed as a green GitHub run or Docker execution.
+
+The existing earlier-part CI screenshot is retained below. It is **not** Part 3 CI evidence:
+
+![Earlier-part CI screenshot](docs/CI.png)
+
+Before submitting, capture a genuine green run for the final Part 3 commit and add that screenshot here. See the [rubric coverage and evidence checklist](docs/part3-submission.md).
+
+### Demonstration video
+
+The student's own-voice, unlisted YouTube recording is still required. No AI voice, invented link or fake video placeholder is included. Record the running MVC application for both roles, explain API session propagation, demonstrate a Blob upload and result publication, and show Docker running. Add the actual unlisted link to this section before submission.
+
+## Credits
+
+Original interface artwork and styling are included in `RaceDay-Event-Management.Web/wwwroot`. Bootstrap 5.3.3 is bundled locally under its MIT licence; its licence notice is retained in the CSS header. Weather data: Open-Meteo, CC BY 4.0. Repository owner and Part 3 commit identity: `djyntuthuko105`.

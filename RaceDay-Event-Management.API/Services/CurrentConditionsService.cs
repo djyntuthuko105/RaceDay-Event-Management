@@ -27,9 +27,15 @@ public class CurrentConditionsService(HttpClient client, IMemoryCache cache)
             result.ObservedAt = DateTimeOffset.FromUnixTimeSeconds(current.GetProperty("time").GetInt64()).ToOffset(TimeSpan.FromHours(2));
             result.Condition = current.GetProperty("weather_code").GetInt32() switch
             {
-                0 => "Clear", 1 or 2 => "Partly cloudy", 3 => "Overcast", 45 or 48 => "Fog",
-                >= 51 and <= 67 => "Rain or drizzle", >= 71 and <= 77 => "Snow",
-                >= 80 and <= 86 => "Showers", >= 95 => "Thunderstorms", _ => "Variable conditions"
+                0 => "Clear",
+                1 or 2 => "Partly cloudy",
+                3 => "Overcast",
+                45 or 48 => "Fog",
+                >= 51 and <= 67 => "Rain or drizzle",
+                >= 71 and <= 77 => "Snow",
+                >= 80 and <= 86 => "Showers",
+                >= 95 => "Thunderstorms",
+                _ => "Variable conditions"
             };
             result.Notice = "Current conditions, not a forecast for the event date. Data: Open-Meteo (CC BY 4.0).";
         }

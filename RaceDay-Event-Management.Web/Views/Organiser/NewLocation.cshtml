@@ -1,11 +1,27 @@
 @model LocationWriteRequest
 @{ ViewData["Title"] = "Add venue"; }
-<section class="card form-card narrow"><h1>Add a venue</h1><form asp-action="NewLocation" method="post"><div asp-validation-summary="All" role="alert"></div>
-<label asp-for="VenueName">Venue name</label><input asp-for="VenueName" class="form-control" required maxlength="150" />
-<label asp-for="AddressLine">Street address</label><input asp-for="AddressLine" class="form-control" required maxlength="255" />
-<label asp-for="City">City</label><input asp-for="City" class="form-control" required maxlength="100" />
-<label asp-for="Province">Province</label><select asp-for="Province" class="form-select" required><option value="">Select province</option>@foreach (var province in new[] { "Eastern Cape", "Free State", "Gauteng", "KwaZulu-Natal", "Limpopo", "Mpumalanga", "North West", "Northern Cape", "Western Cape" }) { <option>@province</option> }</select>
-<label asp-for="PostalCode">Postal code (optional)</label><input asp-for="PostalCode" class="form-control" maxlength="10" />
-<label asp-for="Latitude">Latitude (optional, for weather)</label><input asp-for="Latitude" class="form-control" type="number" step="any" min="-90" max="90" />
-<label asp-for="Longitude">Longitude (optional, for weather)</label><input asp-for="Longitude" class="form-control" type="number" step="any" min="-180" max="180" />
-<button class="btn btn-primary" type="submit">Save venue</button><a asp-action="Events">Back to events</a></form></section>
+<section class="card form-card narrow">
+<h1>Add a venue</h1>
+<form asp-action="NewLocation" method="post">
+<div asp-validation-summary="All" role="alert">
+</div>
+<label asp-for="VenueName">Venue name</label>
+<input asp-for="VenueName" class="form-control" required maxlength="150" />
+<label asp-for="AddressLine">Street address</label>
+<input asp-for="AddressLine" class="form-control" required maxlength="255" />
+<label asp-for="City">City</label>
+<input asp-for="City" class="form-control" required maxlength="100" />
+<label asp-for="Province">Province</label>
+<select asp-for="Province" class="form-select" required>
+<option value="">Select province</option>
+@foreach (var province in new[] { "Eastern Cape", "Free State", "Gauteng", "KwaZulu-Natal", "Limpopo", "Mpumalanga", "North West", "Northern Cape", "Western Cape" }) { <option>@province</option> }</select>
+<label asp-for="PostalCode">Postal code (optional)</label>
+<input asp-for="PostalCode" class="form-control" maxlength="10" />
+<label asp-for="Latitude">Latitude (optional, for weather)</label>
+<input asp-for="Latitude" class="form-control" type="number" step="any" min="-90" max="90" />
+<label asp-for="Longitude">Longitude (optional, for weather)</label>
+<input asp-for="Longitude" class="form-control" type="number" step="any" min="-180" max="180" />
+<button class="btn btn-primary" type="submit">Save venue</button>
+<a asp-action="Events">Back to events</a>
+</form>
+</section>

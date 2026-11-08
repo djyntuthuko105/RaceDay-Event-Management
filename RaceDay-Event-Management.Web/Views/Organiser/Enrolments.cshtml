@@ -1,10 +1,52 @@
 @model EnrolmentPage
 @{ ViewData["Title"] = "Entries and results"; var finished = Model.Event.EventDate < DateOnly.FromDateTime(DateTime.Today); }
-<a class="back-link" asp-action="Events">← Manage events</a><p class="eyebrow">@Model.Event.EventName · @Model.Event.EventDate.ToString("dd MMM yyyy")</p><h1>Entries &amp; results</h1><p>View your field and publish official results after race day.</p><div asp-validation-summary="All" role="alert"></div>
+<a class="back-link" asp-action="Events">← Manage events</a>
+<p class="eyebrow">@Model.Event.EventName · @Model.Event.EventDate.ToString("dd MMM yyyy")</p>
+<h1>Entries &amp; results</h1>
+<p>View your field and publish official results after race day.</p>
+<div asp-validation-summary="All" role="alert">
+</div>
 @if (!finished) { <div class="notice pending">Results open after the event date. Entries are shown below.</div> }
-@if (Model.Enrolments.Count == 0) { <div class="card empty-state"><h2>The start list is open.</h2><p>No participants have entered yet.</p></div> }
-else { <div class="table-responsive card"><table class="table"><caption>Participants and their selected categories</caption><thead><tr><th>Participant</th><th>Category</th><th>Status</th><th>Result</th></tr></thead><tbody>@foreach(var entry in Model.Enrolments) { var result = Model.Results.FirstOrDefault(item => item.EnrolmentId == entry.EnrolmentId); var hasError = ViewData["ErrorEnrolmentId"] is int errorId && errorId == entry.EnrolmentId;
-<tr><td><strong>@entry.ParticipantName</strong><small class="d-block">@entry.ParticipantEmail</small></td><td>@entry.CategoryName</td><td><partial name="_Status" model="entry.Status" /></td><td>
-@if (finished && entry.Status != "Cancelled") { <form asp-action="SaveResult" asp-route-id="@Model.Event.EventId" asp-route-enrolmentId="@entry.EnrolmentId" asp-route-resultId="@result?.ResultId" method="post" class="result-form"><div><label for="time-@entry.EnrolmentId">Finish time (HH:mm:ss)</label><input id="time-@entry.EnrolmentId" name="FinishTime" type="text" class="form-control" pattern="[0-2][0-9]:[0-5][0-9]:[0-5][0-9]" value="@(hasError ? ViewData["AttemptedTime"] : result?.FinishTime.ToString("HH:mm:ss"))" placeholder="00:45:30" required /></div><div><label for="position-@entry.EnrolmentId">Position</label><input id="position-@entry.EnrolmentId" name="FinishPosition" type="number" class="form-control" value="@(hasError ? ViewData["AttemptedPosition"] : result?.FinishPosition)" min="1" max="100000" required /></div><button class="btn btn-sm btn-primary" type="submit">@(result is null ? "Publish" : "Update")</button></form> }
+@if (Model.Enrolments.Count == 0) { <div class="card empty-state">
+<h2>The start list is open.</h2>
+<p>No participants have entered yet.</p>
+</div> }
+else { <div class="table-responsive card">
+<table class="table">
+<caption>Participants and their selected categories</caption>
+<thead>
+<tr>
+<th>Participant</th>
+<th>Category</th>
+<th>Status</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+@foreach(var entry in Model.Enrolments) { var result = Model.Results.FirstOrDefault(item => item.EnrolmentId == entry.EnrolmentId); var hasError = ViewData["ErrorEnrolmentId"] is int errorId && errorId == entry.EnrolmentId;
+<tr>
+<td>
+<strong>@entry.ParticipantName</strong>
+<small class="d-block">@entry.ParticipantEmail</small>
+</td>
+<td>@entry.CategoryName</td>
+<td>
+<partial name="_Status" model="entry.Status" />
+</td>
+<td>
+@if (finished && entry.Status != "Cancelled") { <form asp-action="SaveResult" asp-route-id="@Model.Event.EventId" asp-route-enrolmentId="@entry.EnrolmentId" asp-route-resultId="@result?.ResultId" method="post" class="result-form">
+<div>
+<label for="time-@entry.EnrolmentId">Finish time (HH:mm:ss)</label>
+<input id="time-@entry.EnrolmentId" name="FinishTime" type="text" class="form-control" pattern="[0-2][0-9]:[0-5][0-9]:[0-5][0-9]" value="@(hasError ? ViewData["AttemptedTime"] : result?.FinishTime.ToString("HH:mm:ss"))" placeholder="00:45:30" required />
+</div>
+<div>
+<label for="position-@entry.EnrolmentId">Position</label>
+<input id="position-@entry.EnrolmentId" name="FinishPosition" type="number" class="form-control" value="@(hasError ? ViewData["AttemptedPosition"] : result?.FinishPosition)" min="1" max="100000" required />
+</div>
+<button class="btn btn-sm btn-primary" type="submit">@(result is null ? "Publish" : "Update")</button>
+</form> }
 else { <span>@(result?.FinishTime.ToString("HH:mm:ss") ?? "Awaiting race day")</span> }
-</td></tr> }</tbody></table></div> }
+</td>
+</tr> }</tbody>
+</table>
+</div> }

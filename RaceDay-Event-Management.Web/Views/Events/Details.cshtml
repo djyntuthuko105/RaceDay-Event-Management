@@ -3,15 +3,76 @@
 @{ ViewData["Title"] = Model.Event.EventName; var race = Model.Event; }
 <a class="back-link" asp-action="Index">← All events</a>
 @if (Model.Images.Count > 0) { <img class="event-banner" src="@Url.Action("Event", "Media", new { id = Model.Images[0].EventImageId })" alt="Banner for @race.EventName" /> }
-<section class="detail-hero"><span class="sport-tag">@race.EventType</span><h1>@race.EventName</h1><p>@race.City, @race.Province · @race.EventDate.ToString("dddd, dd MMMM yyyy")</p></section>
-<div class="detail-grid"><section><div class="card padded"><p class="eyebrow">THE EXPERIENCE</p><h2>About the event</h2><p class="preserve-lines">@race.Description</p><dl class="facts"><div><dt>Distance</dt><dd>@race.DistanceKm.ToString("0.#") km</dd></div><div><dt>Venue</dt><dd>@race.VenueName</dd></div><div><dt>Organiser</dt><dd>@race.OrganiserName</dd></div><div><dt>Entries close</dt><dd>@race.RegistrationDeadline.ToString("dd MMM yyyy")</dd></div></dl></div>
-<div class="card padded"><h2>Race categories</h2>@if (race.Categories.Count == 0) { <p>Categories will be announced by the organiser.</p> } else { <ul class="category-list">@foreach (var category in race.Categories) { <li><strong>@category.CategoryName</strong><span>@(category.CategoryDistanceKm?.ToString("0.#") ?? race.DistanceKm.ToString("0.#")) km · Ages @(category.MinimumAge?.ToString() ?? "all")–@(category.MaximumAge?.ToString() ?? "open")</span></li> }</ul> }</div>
-<div class="card padded"><p class="eyebrow">PLAN YOUR RACE DAY</p><h2>Weather &amp; directions</h2>@if (Model.Conditions.ObservedAt is not null) { <div class="weather-reading"><strong>@Model.Conditions.TemperatureCelsius?.ToString("0.#")°C</strong><span>@Model.Conditions.Condition · Wind @Model.Conditions.WindSpeedKmh?.ToString("0.#") km/h</span></div><p>Observed @Model.Conditions.ObservedAt.Value.ToString("dd MMM yyyy, HH:mm") SAST.</p> }<p>@Model.Conditions.Notice</p><p><a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Weather by Open-Meteo</a></p><a class="btn btn-outline-dark" href="@Model.Conditions.DirectionsUrl" target="_blank" rel="noopener noreferrer">Get directions to venue</a><small class="d-block">Opens Google Maps. Venue directions are not the official race course; ask your organiser for route details.</small></div></section>
-<aside class="card padded entry-panel"><p class="eyebrow">SEE YOU AT THE START LINE</p><h2>Make it your race.</h2><div asp-validation-summary="All" role="alert"></div>
+<section class="detail-hero">
+<span class="sport-tag">@race.EventType</span>
+<h1>@race.EventName</h1>
+<p>@race.City, @race.Province · @race.EventDate.ToString("dddd, dd MMMM yyyy")</p>
+</section>
+<div class="detail-grid">
+<section>
+<div class="card padded">
+<p class="eyebrow">THE EXPERIENCE</p>
+<h2>About the event</h2>
+<p class="preserve-lines">@race.Description</p>
+<dl class="facts">
+<div>
+<dt>Distance</dt>
+<dd>@race.DistanceKm.ToString("0.#") km</dd>
+</div>
+<div>
+<dt>Venue</dt>
+<dd>@race.VenueName</dd>
+</div>
+<div>
+<dt>Organiser</dt>
+<dd>@race.OrganiserName</dd>
+</div>
+<div>
+<dt>Entries close</dt>
+<dd>@race.RegistrationDeadline.ToString("dd MMM yyyy")</dd>
+</div>
+</dl>
+</div>
+<div class="card padded">
+<h2>Race categories</h2>
+@if (race.Categories.Count == 0) { <p>Categories will be announced by the organiser.</p> } else { <ul class="category-list">
+@foreach (var category in race.Categories) { <li>
+<strong>@category.CategoryName</strong>
+<span>@(category.CategoryDistanceKm?.ToString("0.#") ?? race.DistanceKm.ToString("0.#")) km · Ages @(category.MinimumAge?.ToString() ?? "all")–@(category.MaximumAge?.ToString() ?? "open")</span>
+</li> }</ul> }</div>
+<div class="card padded">
+<p class="eyebrow">PLAN YOUR RACE DAY</p>
+<h2>Weather &amp; directions</h2>
+@if (Model.Conditions.ObservedAt is not null) { <div class="weather-reading">
+<strong>@Model.Conditions.TemperatureCelsius?.ToString("0.#")°C</strong>
+<span>@Model.Conditions.Condition · Wind @Model.Conditions.WindSpeedKmh?.ToString("0.#") km/h</span>
+</div>
+<p>Observed @Model.Conditions.ObservedAt.Value.ToString("dd MMM yyyy, HH:mm") SAST.</p> }<p>@Model.Conditions.Notice</p>
+<p>
+<a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Weather by Open-Meteo</a>
+</p>
+<a class="btn btn-outline-dark" href="@Model.Conditions.DirectionsUrl" target="_blank" rel="noopener noreferrer">Get directions to venue</a>
+<small class="d-block">Opens Google Maps. Venue directions are not the official race course; ask your organiser for route details.</small>
+</div>
+</section>
+<aside class="card padded entry-panel">
+<p class="eyebrow">SEE YOU AT THE START LINE</p>
+<h2>Make it your race.</h2>
+<div asp-validation-summary="All" role="alert">
+</div>
 @if (Context.Session.GetString(WebSession.Role) == "Participant")
 {
-<form asp-action="Enter" asp-route-id="@race.EventId" method="post"><label for="CategoryId">Choose your category</label><select id="CategoryId" name="CategoryId" class="form-select" asp-for="CategoryId" required><option value="">Select a category</option>@foreach (var c in race.Categories) { <option value="@c.CategoryId">@c.CategoryName</option> }</select><button class="btn btn-primary" type="submit" disabled="@(race.Categories.Count == 0)">Enter event</button></form><small>The organiser's entry rules and availability apply.</small>
+<form asp-action="Enter" asp-route-id="@race.EventId" method="post">
+<label for="CategoryId">Choose your category</label>
+<select id="CategoryId" name="CategoryId" class="form-select" asp-for="CategoryId" required>
+<option value="">Select a category</option>
+@foreach (var c in race.Categories) { <option value="@c.CategoryId">@c.CategoryName</option> }</select>
+<button class="btn btn-primary" type="submit" disabled="@(race.Categories.Count == 0)">Enter event</button>
+</form>
+<small>The organiser's entry rules and availability apply.</small>
 }
-else if (Context.Session.GetInt32(WebSession.UserId) is null) { <p>Log in as a Participant to enter this event.</p><a class="btn btn-primary" asp-controller="Account" asp-action="Login">Log in to enter</a> }
+else if (Context.Session.GetInt32(WebSession.UserId) is null) { <p>Log in as a Participant to enter this event.</p>
+<a class="btn btn-primary" asp-controller="Account" asp-action="Login">Log in to enter</a> }
 else { <p>You're signed in as an Organiser. Participant accounts can enter events.</p> }
-</aside></div>
+</aside>
+</div>
