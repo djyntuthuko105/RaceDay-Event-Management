@@ -208,6 +208,22 @@ public class EventsController : ControllerBase
         return Ok(enrolments.Select(Responses.Enrolment));
     }
 
+    // Unlike the public catalogue, this includes the organiser's completed events.
+    [HttpGet("managed")]
+    [RequireSession(Roles.Organiser)]
+    public async Task<IActionResult> Managed(CancellationToken cancellationToken)
+    {
+        var userId = SessionReader.UserId(HttpContext);
+        var events = await Details().Include(race => race.Enrolments)
+            .Where(race => race.OrganiserId == userId)
+            .OrderByDescending(race => race.EventDate).ToListAsync(cancellationToken);
+        return Ok(events.Select(race => new OrganiserEventResponse
+        {
+            Event = Responses.Event(race),
+            TotalEnrolments = race.Enrolments.Count(entry => entry.Status != EnrolmentStatuses.Cancelled)
+        }));
+    }
+
     private IQueryable<Event> Details()
     {
         return _db.Events

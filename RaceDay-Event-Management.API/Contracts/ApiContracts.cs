@@ -362,3 +362,9 @@ public class WeatherResponse
 
     public DateTime RecordedAt { get; set; }
 }
+
+public class OrganiserEventResponse
+{
+    public EventResponse Event { get; set; } = new();
+    public int TotalEnrolments { get; set; }
+}
