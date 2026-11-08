@@ -1,4 +1,4 @@
-# Optional SQL Server overlay. Set a strong SQL_PASSWORD in your shell first.
+# Required SQL Server database stack; the default Compose file is a portable demo. Set a strong SQL_PASSWORD in your shell first.
 services:
   api:
     environment:
