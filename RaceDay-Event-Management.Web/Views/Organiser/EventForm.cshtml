@@ -1,0 +1,10 @@
+@model EventFormPage
+@{ var editing = Model.EventId > 0; ViewData["Title"] = editing ? "Edit event" : "Create event"; }
+<a class="back-link" asp-action="Events">← Manage events</a><section class="card form-card"><p class="eyebrow">ORGANISER WORKSPACE</p><h1>@ViewData["Title"]</h1><p>Set the scene for a memorable race day.</p>
+<form asp-action="@(editing ? "Edit" : "Create")" asp-route-id="@(editing ? Model.EventId : (int?)null)" method="post"><div asp-validation-summary="All" role="alert"></div>
+<label asp-for="EventName">Event name</label><input asp-for="EventName" class="form-control" maxlength="150" required />
+<label asp-for="Description">About the event</label><textarea asp-for="Description" class="form-control" rows="5" maxlength="1000" required></textarea>
+<div class="row"><div class="col-md-6"><label asp-for="EventDate">Race date</label><input asp-for="EventDate" type="date" class="form-control" required /></div><div class="col-md-6"><label asp-for="RegistrationDeadline">Entries close</label><input asp-for="RegistrationDeadline" type="date" class="form-control" required /></div></div>
+<div class="row"><div class="col-md-6"><label asp-for="DistanceKm">Distance (km)</label><input asp-for="DistanceKm" type="number" class="form-control" min="0.01" max="9999.99" step="0.01" required /></div><div class="col-md-6"><label asp-for="EventTypeId">Sport</label><select asp-for="EventTypeId" class="form-select" required><option value="">Select a sport</option>@foreach (var type in Model.Types) { <option value="@type.EventTypeId">@type.TypeName</option> }</select></div></div>
+<label asp-for="LocationId">Venue</label><select asp-for="LocationId" class="form-select" required><option value="">Select a venue</option>@foreach (var location in Model.Locations) { <option value="@location.LocationId">@location.VenueName · @location.City</option> }</select><a asp-action="NewLocation">Add a new venue</a>
+<div class="form-actions"><button class="btn btn-primary" type="submit">@(editing ? "Save event" : "Create event")</button><a asp-action="Events">Cancel</a></div></form></section>
