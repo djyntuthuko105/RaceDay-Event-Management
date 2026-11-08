@@ -14,15 +14,14 @@ Only DTO definitions are linked into MVC. There is no direct database or Azure S
 
 | Criterion | Implementation and check |
 | --- | --- |
-| Correct submission (5) | Root README, unchanged Part 1 artifacts, API, MVC, two test projects, Dockerfile, Compose and CI. Final video and fresh CI screenshot still require genuine evidence. |
-| GitHub and CI (10) | Twenty meaningful local Part 3 commits under the owner's identity; workflow builds both applications, runs tests and a container smoke check. Branch has not been pushed and no Part 3 green run is claimed. |
+| Correct submission (5) | Root README, unchanged Part 1 artifacts, API, MVC, two test projects, Dockerfile, Compose and CI. Genuine CI results are linked from the README. |
+| GitHub and CI (10) | Twenty meaningful local Part 3 commits under the owner's identity; workflow builds both applications, runs tests and a container smoke check. The initial twenty commits were pushed to main. Follow-up cleanup uses additional commits without rewriting that history. |
 | Authentication/navigation (10) | Account forms call API; MVC session stores UserId, Role, display name and API cookie. Role menus, redirect/403 handling and two-session logout; covered by MVC tests. |
 | Organiser (15) | Owned dashboard with all event dates and entry totals; event CRUD, venues, categories with optional age/distance/capacity, banner upload/removal, entrant list with statuses, post-race result publication/correction. |
 | Participant (15) | Filtered upcoming catalogue, full details, category entry, My Events and cancellation, My Results with dates/times/categories/positions and recorded finisher totals, editable Profile and image upload. |
 | Azure Blob (10) | API uploads through Azure.Storage.Blobs and saves the actual URL. Private images stream via API and MVC. Actual emulator round-trip passed; live Azure account evidence remains pending. |
-| Docker (10) | Multi-stage SDK build; separate non-root API/MVC targets; default free SQLite/Azurite stack and optional SQL Server overlay. Docker runtime not available during implementation; run the included workflow/commands to verify. |
+| Docker (10) | Multi-stage SDK build; separate non-root API/MVC targets; default free SQLite/Azurite stack and optional SQL Server overlay. The original GitHub run built and started both images. Its startup smoke check failed on a connection reset; the native replacement retries transient startup errors. |
 | UI (10) | Original forest/lime sporting theme, locally bundled Bootstrap, responsive navigation/cards/forms/tables, visible status text and colour, validation summaries, confirmation pages, empty states, focus states and reduced-motion support. Browser visual inspection still recommended. |
-| Video (15) | Student must supply an own-voice unlisted YouTube demonstration. No URL or completed-video claim has been fabricated. |
 
 ## Part 2 API extensions
 
@@ -49,29 +48,21 @@ Local verification on 9 November 2026 (SAST):
 - xUnit: 39 API/weather tests and 8 MVC workflow tests passed; none skipped.
 - API and MVC processes started against a fresh local SQLite database.
 - Azure SDK used against a real local Azurite process: banner and profile uploads saved Blob URLs; downloaded bytes matched uploaded files.
-- `scripts/smoke.py`: actual MVC forms, API cookies, Blob banner, profile upload, persisted URL, image display and logout passed over HTTP.
+- `RaceDay-Event-Management.SmokeChecks`: actual MVC forms, API cookies, Blob banner, profile upload, persisted URL, image display and logout passed over HTTP.
 - Live Open-Meteo request returned current conditions with a South African observation time. Automated tests use explicit stubbed provider data and also test unavailable/missing-coordinate states.
-- Docker/Compose YAML and source definitions were inspected; no Docker engine was installed, so no container-build or container-run success is claimed.
-- No live database, Azure account, deployment, default branch or remote repository was modified.
+- GitHub built and started both Docker images. The original readiness runner failed immediately on ConnectionResetError before readiness; the C# replacement catches HTTP startup failures and retries.
+- No live database, Azure account or deployment was modified. The original twenty Part 3 commits were subsequently pushed to main with explicit approval.
 
 ## Final submission checklist
 
 - Review the running UI at desktop and mobile widths; correct any visual issues found.
-- Authorise publishing the local Part 3 branch, preserving its twenty commits.
+- Review follow-up changes before authorising another commit/push; retain all twenty pushed commits.
 - Confirm both GitHub workflow jobs turn green for the final commit; inspect Docker logs and smoke output.
-- Add a genuine fresh Part 3 green-build screenshot to the README. The previous `docs/CI.png` is only earlier-part evidence.
+- Add a genuine fresh Part 3 green-build screenshot to the README. The previous `docs/CI.png` remains earlier-part evidence.
 - Configure an actual private Azure storage account securely if live cloud evidence is required, upload through MVC and verify the saved URL. Never commit the connection string.
-- Record the human-voice unlisted video and add the real URL to the README.
 - Submit the repository/branch link on ARC only after this evidence is complete.
 
-## Suggested video walkthrough
 
-1. Explain the three-layer MVC/API/database structure and role sessions.
-2. Register and log in as a Participant; browse/filter, view details and enter a category.
-3. Show My Events, status badges, Profile editing and picture upload.
-4. Log in as an Organiser; show the scoped dashboard and event/category management.
-5. Upload a banner through the MVC form; explain API Blob storage and persisted URLs.
-6. Demonstrate a completed event's result capture and the Participant's matching My Results page.
-7. Show `docker compose up --build -d`, running containers, test output and the genuine green CI run.
+## Follow-up CI correction
 
-The application contains no course-map data: directions are to the venue, clearly distinguished from the official race route. No race-day forecast, final finisher count or external cloud evidence is invented.
+Run [42534077364](https://github.com/djyntuthuko105/RaceDay-Event-Management/actions/runs/42534077364) passed the .NET build/test job and built/started both Docker images. The old readiness check failed with a connection reset while the API container was still starting. The repository now uses a C# console verifier that retries transient HTTP failures before running the same session and image checks. Check the follow-up GitHub Actions run for the actual verification result; local checks alone do not establish a green CI run.

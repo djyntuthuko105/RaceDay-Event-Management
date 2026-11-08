@@ -19,7 +19,7 @@
 <p class="eyebrow">MAKE YOUR NEXT MOVE</p>
 <h2>Upcoming events</h2>
 </div>
-<span class="count-pill">@Model.Events.Count events</span>
+<span class="count-pill">@Model.Events.Count @(Model.Events.Count == 1 ? "event" : "events") to explore</span>
 </div>
 <form method="get" asp-action="Index" class="filter-bar">
 <div>

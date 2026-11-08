@@ -1,4 +1,9 @@
 @using RaceDay.Web.Security
+@{
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+    var role = Context.Session.GetString(WebSession.Role);
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,21 +17,23 @@
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header">
-    <a class="brand" asp-controller="Events" asp-action="Index">RACE<span>DAY</span>
-<small>FIND YOUR NEXT START LINE.</small>
-</a>
+    <a class="brand" asp-controller="Events" asp-action="Index" aria-label="RaceDay home">
+        <img src="~/images/favicon.svg" alt="" width="40" height="40" />
+        <span class="brand-name">RACE<b>DAY</b><small>FIND YOUR NEXT START LINE.</small></span>
+    </a>
     <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav">Menu</button>
     <nav id="main-nav" aria-label="Main navigation">
-        <a asp-controller="Events" asp-action="Index">Explore events</a>
+        <a asp-controller="Events" asp-action="Index" aria-current="@(controller == "Events" ? "page" : null)">Explore events</a>
         @if (Context.Session.GetInt32(WebSession.UserId) is not null)
         {
             @if (Context.Session.GetString(WebSession.Role) == "Organiser")
-            { <a asp-controller="Organiser" asp-action="Index">Dashboard</a>
-<a asp-controller="Organiser" asp-action="Events">Manage events</a> }
+            { <a asp-controller="Organiser" asp-action="Index" aria-current="@(controller == "Organiser" && action == "Index" ? "page" : null)">Dashboard</a>
+<a asp-controller="Organiser" asp-action="Events" aria-current="@(controller == "Organiser" && action == "Events" ? "page" : null)">Manage events</a> }
             else
-            { <a asp-controller="Participant" asp-action="Events">My events</a>
-<a asp-controller="Participant" asp-action="Results">My results</a> }
-            <a asp-controller="Profile" asp-action="Index">Profile</a>
+            { <a asp-controller="Participant" asp-action="Events" aria-current="@(controller == "Participant" && action == "Events" ? "page" : null)">My events</a>
+<a asp-controller="Participant" asp-action="Results" aria-current="@(controller == "Participant" && action == "Results" ? "page" : null)">My results</a> }
+            <a asp-controller="Profile" asp-action="Index" aria-current="@(controller == "Profile" && action == "Index" ? "page" : null)">Profile</a>
+            <span class="account-label"><strong>@Context.Session.GetString(WebSession.Name)</strong><small>@role workspace</small></span>
             <form asp-controller="Account" asp-action="Logout" method="post">
 <button class="btn btn-outline-dark" type="submit">Log out</button>
 </form>
@@ -38,7 +45,7 @@
         }
     </nav>
 </header>
-<main id="main" class="page-shell">
+<main id="main" class="page-shell" tabindex="-1">
     @if (TempData["Success"] is string success) { <div class="notice success" role="status">@success</div> }
     @if (TempData["Error"] is string error) { <div class="notice danger" role="alert">@error</div> }
     @RenderBody()

@@ -2,6 +2,7 @@
 <article class="event-card">
 <div class="event-art art-@Model.EventType.ToLowerInvariant()">
 <span class="sport-tag">@Model.EventType</span>
+<time class="date-chip" datetime="@Model.EventDate.ToString("yyyy-MM-dd")"><strong>@Model.EventDate.ToString("dd")</strong><span>@Model.EventDate.ToString("MMM")</span></time>
 <span class="distance-mark">@Model.DistanceKm.ToString("0.#")<small>KM</small>
 </span>
 </div>
