@@ -8,3 +8,9 @@ public class BrowsePage
     public int? TypeId { get; set; }
     public string? City { get; set; }
 }
+
+public class EventDetailsPage
+{
+    public EventDetailResponse Event { get; set; } = new();
+    public int CategoryId { get; set; }
+}
