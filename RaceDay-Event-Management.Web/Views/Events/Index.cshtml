@@ -1,0 +1,10 @@
+@model BrowsePage
+@{ ViewData["Title"] = "Find your next event"; }
+<section class="hero"><div class="hero-content"><p class="eyebrow">SOUTH AFRICA'S ROAD EVENT COMMUNITY</p><h1>Your next<br /><em>start line.</em></h1><p>From your first 5 km to your next personal best.<br />Find a race worth showing up for.</p><a class="btn btn-lime" href="#events">Find my next event</a><div class="hero-foot">RUNNING <span>/</span> WALKING <span>/</span> CYCLING</div></div><div class="hero-art" role="img" aria-label="Illustration of a South African road race through rolling hills"></div></section>
+<section id="events"><div class="section-heading"><div><p class="eyebrow">MAKE YOUR NEXT MOVE</p><h2>Upcoming events</h2></div><span class="count-pill">@Model.Events.Count events</span></div>
+<form method="get" asp-action="Index" class="filter-bar"><div><label for="search">Search events</label><input id="search" name="search" value="@Model.Search" class="form-control" placeholder="Find your next race" /></div>
+<div><label for="typeId">Sport</label><select id="typeId" name="typeId" class="form-select" asp-for="TypeId"><option value="">All sports</option>@foreach(var type in Model.Types) { <option value="@type.EventTypeId">@type.TypeName</option> }</select></div>
+<div><label for="city">City</label><input id="city" name="city" value="@Model.City" class="form-control" placeholder="Anywhere in South Africa" /></div><button class="btn btn-primary" type="submit">Find events</button><a asp-action="Index">Clear</a></form>
+@if (Model.Events.Count == 0) { <div class="empty-state card"><h3>No start lines found.</h3><p>Try another city or clear your filters.</p><a asp-action="Index">Show all events</a></div> }
+else { <div class="event-grid">@foreach (var race in Model.Events) { <partial name="_EventCard" model="race" /> }</div> }
+</section>
