@@ -56,6 +56,7 @@ public class EventImagesController : ControllerBase
     [HttpPost("api/events/{eventId:int}/images")]
     [RequireSession(Roles.Organiser)]
     [Consumes("multipart/form-data")]
+    [RequestSizeLimit(6 * 1024 * 1024)]
     [ProducesResponseType(typeof(EventImageResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiMessage), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiMessage), StatusCodes.Status401Unauthorized)]
@@ -98,6 +99,16 @@ public class EventImagesController : ControllerBase
         return Created($"/api/events/{eventId}/images", Responses.EventImage(image));
     }
 
+    // Images remain in a private Blob container; clients request them through this API.
+    [HttpGet("api/event-images/{id:int}/content")]
+    public async Task<IActionResult> Content(int id, CancellationToken cancellationToken)
+    {
+        var image = await _db.EventImages.AsNoTracking().FirstOrDefaultAsync(item => item.EventImageId == id, cancellationToken);
+        if (image is null) return NotFound();
+        var stream = await _storage.OpenAsync(image.ImageUrl, cancellationToken);
+        return stream is null ? NotFound() : File(stream, image.ImageType);
+    }
+
     /// <summary>
     /// Removes an image from an event the organiser owns.
     /// </summary>
@@ -123,7 +134,7 @@ public class EventImagesController : ControllerBase
         if (image.Event.OrganiserId != SessionReader.UserId(HttpContext))
             return StatusCode(StatusCodes.Status403Forbidden, new ApiMessage("You can only remove images from events you organised."));
 
-        _storage.Delete(image.ImageUrl);
+        await _storage.DeleteAsync(image.ImageUrl, cancellationToken);
         _db.EventImages.Remove(image);
         await _db.SaveChangesAsync(cancellationToken);
         return NoContent();

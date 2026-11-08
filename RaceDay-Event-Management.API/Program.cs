@@ -48,6 +48,16 @@ builder.Services.AddSwaggerGen(options =>
 var app = builder.Build();
 
 await DatabaseStartup.ApplyAsync(app);
+app.UseExceptionHandler(handler => handler.Run(async context =>
+{
+    context.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
+    await context.Response.WriteAsJsonAsync(new RaceDay_Event_Management.API.Contracts.ApiMessage("The service could not complete this request. Please try again shortly."));
+}));
+app.Use(async (context, next) =>
+{
+    context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+    await next();
+});
 
 // Swagger stays on outside Development so the API can be tried from the browser during marking.
 app.UseSwagger();
