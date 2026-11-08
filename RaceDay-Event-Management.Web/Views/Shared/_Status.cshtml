@@ -1,0 +1,3 @@
+@model string
+@{ var colour = Model switch { "Confirmed" => "confirmed", "Pending" => "pending", "Completed" => "completed", "Cancelled" => "cancelled", _ => "neutral" }; }
+<span class="status-badge @colour">@Model</span>
