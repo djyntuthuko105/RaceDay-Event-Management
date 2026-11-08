@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaceDay-Event-Management.AP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaceDay-Event-Management.Web", "RaceDay-Event-Management.Web\RaceDay-Event-Management.Web.csproj", "{B14E44F9-2829-41BC-93BB-348E39C5EA4D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaceDay-Event-Management.Web.Tests", "RaceDay-Event-Management.Web.Tests\RaceDay-Event-Management.Web.Tests.csproj", "{6BB1A0E4-D83D-4DD8-9CD0-0648F9F5291E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,18 @@ Global
 		{B14E44F9-2829-41BC-93BB-348E39C5EA4D}.Release|x64.Build.0 = Release|Any CPU
 		{B14E44F9-2829-41BC-93BB-348E39C5EA4D}.Release|x86.ActiveCfg = Release|Any CPU
 		{B14E44F9-2829-41BC-93BB-348E39C5EA4D}.Release|x86.Build.0 = Release|Any CPU
+		{6BB1A0E4-D83D-4DD8-9CD0-0648F9F5291E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BB1A0E4-D83D-4DD8-9CD0-0648F9F5291E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BB1A0E4-D83D-4DD8-9CD0-0648F9F5291E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6BB1A0E4-D83D-4DD8-9CD0-0648F9F5291E}.Debug|x64.Build.0 = Debug|Any CPU
+		{6BB1A0E4-D83D-4DD8-9CD0-0648F9F5291E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6BB1A0E4-D83D-4DD8-9CD0-0648F9F5291E}.Debug|x86.Build.0 = Debug|Any CPU
+		{6BB1A0E4-D83D-4DD8-9CD0-0648F9F5291E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BB1A0E4-D83D-4DD8-9CD0-0648F9F5291E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BB1A0E4-D83D-4DD8-9CD0-0648F9F5291E}.Release|x64.ActiveCfg = Release|Any CPU
+		{6BB1A0E4-D83D-4DD8-9CD0-0648F9F5291E}.Release|x64.Build.0 = Release|Any CPU
+		{6BB1A0E4-D83D-4DD8-9CD0-0648F9F5291E}.Release|x86.ActiveCfg = Release|Any CPU
+		{6BB1A0E4-D83D-4DD8-9CD0-0648F9F5291E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

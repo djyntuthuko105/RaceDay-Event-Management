@@ -58,9 +58,7 @@ public class UsersController : ControllerBase
         user.FirstName = request.FirstName.Trim();
         user.LastName = request.LastName.Trim();
         user.PhoneNumber = string.IsNullOrWhiteSpace(request.PhoneNumber) ? null : request.PhoneNumber.Trim();
-        user.ProfilePictureUrl = string.IsNullOrWhiteSpace(request.ProfilePictureUrl)
-            ? null
-            : request.ProfilePictureUrl.Trim();
+        // Picture URLs are assigned by the upload endpoint, never by a posted URL.
 
         await _db.SaveChangesAsync(cancellationToken);
         return Ok(Responses.User(user));

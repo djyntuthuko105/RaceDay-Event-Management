@@ -6,7 +6,7 @@ using Xunit;
 
 namespace RaceDay_Event_Management.API.Tests;
 
-public class RaceDayApiTests : IClassFixture<RaceDayApiFactory>
+public partial class RaceDayApiTests : IClassFixture<RaceDayApiFactory>
 {
     private readonly RaceDayApiFactory _factory;
 
