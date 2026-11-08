@@ -1,0 +1,8 @@
+@model ProfilePage
+@{ ViewData["Title"] = "My profile"; }
+<p class="eyebrow">YOUR RACEDAY IDENTITY</p><h1>My profile</h1><div class="profile-grid"><aside class="card padded profile-summary"><div class="avatar">@Model.FirstName.FirstOrDefault()</div><h2>@Model.FirstName @Model.LastName</h2><span class="status-badge confirmed">@Model.Role</span><p>@Model.Email</p></aside>
+<section class="card form-card"><h2>Your details</h2><p>Keep your contact information ready for race day.</p><form asp-action="Index" method="post"><div asp-validation-summary="All" role="alert"></div>
+<label asp-for="FirstName">First name</label><input asp-for="FirstName" autocomplete="given-name" class="form-control" maxlength="50" required />
+<label asp-for="LastName">Last name</label><input asp-for="LastName" autocomplete="family-name" class="form-control" maxlength="50" required />
+<label asp-for="PhoneNumber">Phone number</label><input asp-for="PhoneNumber" type="tel" autocomplete="tel" class="form-control" maxlength="20" />
+<button class="btn btn-primary" type="submit">Save changes</button></form></section></div>
