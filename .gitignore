@@ -484,3 +484,13 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Local Part 3 runtime data and secrets
+*.db
+*.db-shm
+*.db-wal
+.env
+appsettings.Local.json
+TestResults/
+**/wwwroot/event-images/**
+!**/wwwroot/event-images/.gitkeep

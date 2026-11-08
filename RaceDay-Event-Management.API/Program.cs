@@ -11,7 +11,10 @@ var connectionString = builder.Configuration.GetConnectionString("RaceDayDb")
         "The RaceDayDb connection string is missing. Add it under ConnectionStrings in appsettings.json.");
 
 builder.Services.AddDbContext<RaceDayDbContext>(options =>
-    options.UseSqlServer(connectionString));
+{
+    if (builder.Configuration["Database:Provider"] == "SQLite") options.UseSqlite(connectionString);
+    else options.UseSqlServer(connectionString);
+});
 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
@@ -73,12 +76,13 @@ app.UseSwaggerUI(options =>
     options.DocumentTitle = "RaceDay API";
 });
 
-if (!app.Environment.IsEnvironment("Testing"))
+if (!app.Environment.IsEnvironment("Testing") && app.Configuration.GetValue<bool>("Https:Enabled"))
     app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseSession();
 app.UseAuthorization();
 app.MapControllers();
+app.MapGet("/health", () => Results.Ok(new { status = "ready" }));
 
 app.Run();
 

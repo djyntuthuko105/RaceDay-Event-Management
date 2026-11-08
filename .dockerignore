@@ -1,0 +1,11 @@
+**/bin/
+**/obj/
+.git/
+**/*.db
+**/*.db-shm
+**/*.db-wal
+**/*.trx
+TestResults/
+.env
+**/appsettings.Local.json
+**/wwwroot/event-images/*

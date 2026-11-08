@@ -1,0 +1,44 @@
+name: raceday-part3
+services:
+  web:
+    build:
+      context: .
+      target: web
+    ports:
+      - "127.0.0.1:5000:8080"
+    environment:
+      Api__BaseUrl: http://api:8080/
+    depends_on:
+      api:
+        condition: service_started
+    restart: unless-stopped
+  api:
+    build:
+      context: .
+      target: api
+    ports:
+      - "127.0.0.1:5080:8080"
+    environment:
+      Database__Provider: SQLite
+      Database__SeedDemo: "true"
+      ConnectionStrings__RaceDayDb: Data Source=/app/data/raceday.db
+      Storage__Provider: AzureBlob
+      Storage__Container: raceday-images
+      # This is a public local emulator key, not an Azure credential.
+      Storage__ConnectionString: DefaultEndpointsProtocol=http;AccountName=raceday;AccountKey=cmFjZWRheS1sb2NhbC1lbXVsYXRvci1vbmx5LW5vdC1hLWNsb3VkLXNlY3JldC1rZXk=;BlobEndpoint=http://azurite:10000/raceday;
+    volumes:
+      - demo-data:/app/data
+    depends_on:
+      azurite:
+        condition: service_started
+    restart: unless-stopped
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite:3.35.0
+    command: azurite-blob --blobHost 0.0.0.0 --location /data --disableProductStyleUrl --skipApiVersionCheck
+    environment:
+      AZURITE_ACCOUNTS: raceday:cmFjZWRheS1sb2NhbC1lbXVsYXRvci1vbmx5LW5vdC1hLWNsb3VkLXNlY3JldC1rZXk=
+    volumes:
+      - blob-data:/data
+volumes:
+  demo-data:
+  blob-data:

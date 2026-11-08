@@ -17,7 +17,8 @@ public static class DatabaseStartup
 
         try
         {
-            await db.Database.MigrateAsync();
+            if (db.Database.IsSqlite()) await db.Database.EnsureCreatedAsync();
+            else await db.Database.MigrateAsync();
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
@@ -26,7 +27,7 @@ public static class DatabaseStartup
             throw;
         }
 
-        if (await RaceDaySeeder.SeedAsync(db))
+        if (app.Configuration.GetValue<bool>("Database:SeedDemo") && await RaceDaySeeder.SeedAsync(db))
             logger.LogInformation("Demo accounts were created. The sample password is listed in the README.");
     }
 }
