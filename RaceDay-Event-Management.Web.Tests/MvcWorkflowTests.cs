@@ -155,5 +155,23 @@ public class MvcWorkflowTests : IDisposable
         var history = await participant.GetStringAsync("/Participant/Results");
         Assert.Contains("MVC integration race", history); Assert.Contains("00:45:32", history); Assert.Contains("out of 1 recorded finishers", history);
     }
+    [Fact]
+    public async Task Organiser_CannotOpenAnotherOwnersManagementPagesOrForgeCategoryPost()
+    {
+        var other = Browser();
+        await Login(other, "naledi@raceday.co.za");
+        foreach (var path in new[] { "/Organiser/Edit/1", "/Organiser/Delete/1", "/Organiser/Categories/1", "/Organiser/Enrolments/1" })
+            Assert.Equal(HttpStatusCode.Forbidden, (await other.GetAsync(path)).StatusCode);
+        var forged = await Post(other, "/Profile", "/Organiser/Categories/1", new() { ["CategoryName"] = "Forged", ["CategoryDistanceKm"] = "5" });
+        Assert.Equal(HttpStatusCode.Forbidden, forged.StatusCode);
+        var menu = await other.GetStringAsync("/Organiser");
+        Assert.Contains("Manage events", menu);
+        Assert.DoesNotContain(">My results<", menu);
+        var participant = Browser();
+        await Login(participant, "kabelo@example.com");
+        var participantMenu = await participant.GetStringAsync("/Profile");
+        Assert.Contains("My results", participantMenu);
+        Assert.DoesNotContain(">Manage events<", participantMenu);
+    }
     public void Dispose() => factory.Dispose();
 }

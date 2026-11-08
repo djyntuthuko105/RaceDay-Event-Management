@@ -14,10 +14,22 @@ The interface includes role-specific navigation, accessible forms, responsive ca
 
 - .NET 8 SDK for local development and testing.
 - Docker Engine/Desktop with Compose v2 for the complete containerised demo.
-- SQL Server for the original database provider; the portable demo uses SQLite.
+- SQL Server 2022 for the required database stack; a separate portable demo uses SQLite.
 - An Azure storage connection string only when testing against a real Azure account. The Docker demo uses the free local Azurite emulator.
 
-## Run the complete demo
+## Run the required SQL Server stack
+
+Set a strong, disposable `SQL_PASSWORD` environment variable in your shell, then run:
+
+```bash
+docker compose -f compose.yml -f compose.sqlserver.yml up --build -d
+```
+
+This starts SQL Server Developer, applies the original EF Core migration to a fresh `RaceDayDB`, seeds the demo accounts and starts MVC, API and Azurite. SQL Server needs compatible x64 hardware, sufficient memory and acceptance of Microsoft's development licence. Never enable demo seeding against a live database.
+
+The addresses are listed below. Stop this stack with `docker compose -f compose.yml -f compose.sqlserver.yml down`; data volumes are retained.
+
+## Run the lightweight SQLite demo
 
 From the repository root:
 
@@ -48,16 +60,6 @@ docker run --rm -p 5001:8080 --network raceday-part3_default -e Api__BaseUrl=htt
 ```
 
 Open http://localhost:5001. The Compose API must already be running.
-
-### Optional SQL Server stack
-
-Set a strong `SQL_PASSWORD` in your shell, then run:
-
-```bash
-docker compose -f compose.yml -f compose.sqlserver.yml up --build -d
-```
-
-This uses the existing EF Core migrations and a separate SQL Server data volume. SQL Server Developer requires compatible hardware, enough memory and acceptance of Microsoft's development licence. Never enable demo seeding against a live database.
 
 ## Run locally without Docker
 
@@ -109,7 +111,7 @@ dotnet build RaceDay-Event-Management.sln -c Release
 dotnet test RaceDay-Event-Management.sln -c Release
 ```
 
-There are 47 API/weather and MVC integration tests covering authentication, roles, ownership, event/category management, entries, results, profile images and error states.
+There are 50 API/weather and MVC integration tests covering authentication, roles, ownership, event/category management, entries, results, profile images and error states.
 
 With the Blob-enabled demo stack running:
 
@@ -117,7 +119,7 @@ With the Blob-enabled demo stack running:
 dotnet run --project RaceDay-Event-Management.SmokeChecks -c Release
 ```
 
-This native C# check uses only .NET libraries. It waits for local services, creates a disposable organiser and temporary event, verifies MVC sessions and real API-mediated Blob banner/profile uploads, checks persisted URLs and image bytes, verifies logout, and removes its temporary event/banner. It only targets loopback services.
+This native C# check uses only .NET libraries. It waits for local services and verifies real registration/login, role rejection, event creation, category entry, organiser enrolments, post-race results, finisher counts, Blob banner/profile uploads, persisted URLs, image bytes and logout. It also creates, updates and deletes an empty event. Completed-race fixtures remain for inspection; CI removes its disposable volumes afterwards. It only targets loopback services.
 
 ## Project structure
 
@@ -130,10 +132,10 @@ RaceDay-Event-Management.SmokeChecks/  Native C# local-stack verification
 docs/                                Original planning files and coverage notes
 Dockerfile                           Separate API and MVC runtime targets
 compose.yml                          SQLite/Azurite demo stack
-compose.sqlserver.yml                Optional SQL Server overlay
+compose.sqlserver.yml                Required SQL Server stack overlay
 ```
 
-The original ERD, endpoint plan, SQL script, migrations and earlier submission notes are preserved. MVC links only request/response DTOs; it has no EF Core or Azure SDK reference.
+The original ERD, endpoint plan, SQL script, migrations and earlier submission notes are preserved. MVC links only request/response DTOs; it has no EF Core or Azure SDK reference. The historical ERD labels use `NVARCHAR`/`DATETIME2`; the SQL script and EF mapping deliberately use `VARCHAR`/`DATETIME`. EF also requires timestamps where the planning script permits nulls. The nine entities and their relationships are retained; do not treat these historical type/nullability differences as an exact byte-for-byte schema match.
 
 ## Behaviour and CI
 
@@ -143,7 +145,13 @@ The original ERD, endpoint plan, SQL script, migrations and earlier submission n
 - Each MVC session stores its own API cookie, user ID and role. Logout clears both sessions. In-memory sessions end when applications restart; multi-instance hosting needs shared session storage.
 - Real deployment requires HTTPS, secure secrets and appropriate access management.
 
-[GitHub Actions](https://github.com/djyntuthuko105/RaceDay-Event-Management/actions) builds both applications, runs the test suites, builds the Docker stack and executes the native smoke check. The earlier run built both images and passed the test suites, but its old startup smoke check failed on a connection reset. The replacement retries transient startup failures. The workflow verifies it on every push; check the linked run for the actual result.
+[GitHub Actions](https://github.com/djyntuthuko105/RaceDay-Event-Management/actions) builds both applications and runs all tests. The Docker matrix exercises **both SQL Server and SQLite**, each with API, MVC and Azurite. CI generates and masks its SQL Server password; no cloud account or paid infrastructure is provisioned. It also runs the preserved Part 1 SQL script in a separate disposable database.
+
+[Verified SQL Server/SQLite container run](https://github.com/djyntuthuko105/RaceDay-Event-Management/actions/runs/42535805542) passed the full race/Blob smoke workflow, fresh EF migrations, nine-table/demo-seed assertions and the original planning script. Check Actions for subsequent commits' actual status.
+
+The genuine earlier **Part 1 RepoCheck** screenshot is preserved below; it is not presented as a screenshot of the newer Part 3 jobs.
+
+![Successful planning-stage GitHub Actions builds](docs/CI.png)
 
 ## Credits
 

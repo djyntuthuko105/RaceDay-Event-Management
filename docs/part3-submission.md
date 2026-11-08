@@ -14,14 +14,14 @@ Only DTO definitions are linked into MVC. There is no direct database or Azure S
 
 | Criterion | Implementation and check |
 | --- | --- |
-| Correct submission (5) | Root README, unchanged Part 1 artifacts, API, MVC, two test projects, Dockerfile, Compose and CI. Genuine CI results are linked from the README. |
-| GitHub and CI (10) | Twenty meaningful local Part 3 commits under the owner's identity; workflow builds both applications, runs tests and a container smoke check. The initial twenty commits were pushed to main. Follow-up cleanup uses additional commits without rewriting that history. |
+| Correct submission (5) | Root README, unchanged Part 1 artifacts, API, MVC, two test projects, native smoke verifier, Dockerfile, Compose and CI. A genuine historical screenshot and verified Part 3 run are linked from the README. |
+| GitHub and CI (10) | At least twenty meaningful owner-authored Part 3 commits under the owner's identity; workflow builds both applications, runs tests and a container smoke check. The initial twenty commits were pushed to main. Follow-up cleanup uses additional commits without rewriting that history. |
 | Authentication/navigation (10) | Account forms call API; MVC session stores UserId, Role, display name and API cookie. Role menus, redirect/403 handling and two-session logout; covered by MVC tests. |
 | Organiser (15) | Owned dashboard with all event dates and entry totals; event CRUD, venues, categories with optional age/distance/capacity, banner upload/removal, entrant list with statuses, post-race result publication/correction. |
 | Participant (15) | Filtered upcoming catalogue, full details, category entry, My Events and cancellation, My Results with dates/times/categories/positions and recorded finisher totals, editable Profile and image upload. |
 | Azure Blob (10) | API uploads through Azure.Storage.Blobs and saves the actual URL. Private images stream via API and MVC. Actual emulator round-trip passed; live Azure account evidence remains pending. |
-| Docker (10) | Multi-stage SDK build; separate non-root API/MVC targets; default free SQLite/Azurite stack and optional SQL Server overlay. The original GitHub run built and started both images. Its startup smoke check failed on a connection reset; the native replacement retries transient startup errors. |
-| UI (10) | Original forest/lime sporting theme, locally bundled Bootstrap, responsive navigation/cards/forms/tables, visible status text and colour, validation summaries, confirmation pages, empty states, focus states and reduced-motion support. Browser visual inspection still recommended. |
+| Docker (10) | Multi-stage SDK build, non-root API/MVC targets; required SQL Server stack and lightweight SQLite demo. Both complete stacks passed actual CI smoke checks, including Azurite uploads. Fresh SQL migrations/seed and the original planning script also passed on SQL Server 2022. |
+| UI (10) | Original forest/lime sporting theme, locally bundled Bootstrap, responsive navigation/cards/forms/tables, visible status text and colour, validation summaries, confirmation pages, empty states, focus states and reduced-motion support. Actual rendered public pages were inspected through offline exports. The local GUI browser currently refuses live loopback connections despite successful shell HTTP checks; no claim of live GUI verification is made. |
 
 ## Part 2 API extensions
 
@@ -42,27 +42,22 @@ No schema migration was necessary: `EventImages.ImageUrl` and `Users.ProfilePict
 
 ## Verification actually completed
 
-Local verification on 9 November 2026 (SAST):
+[Run 42535805542](https://github.com/djyntuthuko105/RaceDay-Event-Management/actions/runs/42535805542) completed successfully on 9 November 2026 (SAST):
 
-- .NET 8 Release build: succeeded.
-- xUnit: 39 API/weather tests and 8 MVC workflow tests passed; none skipped.
-- API and MVC processes started against a fresh local SQLite database.
-- Azure SDK used against a real local Azurite process: banner and profile uploads saved Blob URLs; downloaded bytes matched uploaded files.
-- `RaceDay-Event-Management.SmokeChecks`: actual MVC forms, API cookies, Blob banner, profile upload, persisted URL, image display and logout passed over HTTP.
-- Live Open-Meteo request returned current conditions with a South African observation time. Automated tests use explicit stubbed provider data and also test unavailable/missing-coordinate states.
-- GitHub built and started both Docker images. The original readiness runner failed immediately on ConnectionResetError before readiness; the C# replacement catches HTTP startup failures and retries.
-- No live database, Azure account or deployment was modified. The original twenty Part 3 commits were subsequently pushed to main with explicit approval.
+- Release API/MVC build and all 47 then-existing tests passed.
+- Both Docker matrix jobs, SQL Server and SQLite, passed the same real HTTP/Blob workflow.
+- SQL Server 2022 started healthy; the API applied `20261008125827_InitialCreate` to a fresh database.
+- Native C# smoke verified MVC/API sessions, role rejection, category creation, participant entry, organiser enrolments, post-race results/finisher counts, event CRUD, banner/profile Blob URL persistence, downloaded bytes and logout.
+- SQL assertions confirmed the EF migration history, nine mapped tables and seeded organiser/participant/event data.
+- The preserved Part 1 SQL script ran successfully in a separate disposable planning database with realistic categories and enrolments.
+- All 43 planned endpoint/method pairs exist in the running Swagger document (49 operations including extensions).
+- An actual Open-Meteo response and Google Maps venue link were inspected; automated weather tests also cover unavailable/missing-coordinate cases.
 
-## Final submission checklist
+The completion audit added three additional API/MVC role and ownership regressions: **41 API/weather plus 9 MVC tests, all 50 passing locally**. Subsequent CI status is available in Actions. No test was removed or weakened.
 
-- Review the running UI at desktop and mobile widths; correct any visual issues found.
-- Review follow-up changes before authorising another commit/push; retain all twenty pushed commits.
-- Confirm both GitHub workflow jobs turn green for the final commit; inspect Docker logs and smoke output.
-- Add a genuine fresh Part 3 green-build screenshot to the README. The previous `docs/CI.png` remains earlier-part evidence.
-- Configure an actual private Azure storage account securely if live cloud evidence is required, upload through MVC and verify the saved URL. Never commit the connection string.
-- Submit the repository/branch link on ARC only after this evidence is complete.
+## Evidence boundaries
 
-
-## Follow-up CI correction
-
-Run [42534077364](https://github.com/djyntuthuko105/RaceDay-Event-Management/actions/runs/42534077364) passed the .NET build/test job and built/started both Docker images. The old readiness check failed with a connection reset while the API container was still starting. The repository now uses a C# console verifier that retries transient HTTP failures before running the same session and image checks. Check the follow-up GitHub Actions run for the actual verification result; local checks alone do not establish a green CI run.
+- The README includes the genuine historical Part 1 green-build screenshot, clearly labelled as historical, and a direct successful Part 3 SQL Server run link. No screenshot was fabricated or replaced with a badge.
+- Azurite proves the actual Azure SDK round-trip, not a live Azure upload. No project-specific Azure account or connection string has been supplied. Real-cloud evidence requires an existing approved RaceDay development account/container and securely provided API-only configuration before an approved test upload.
+- The GUI live-preview failure remains unresolved; its root cause has not been established. Offline captures are real rendered app output but do not establish live browser navigation.
+- No live database/cloud resource was modified or provisioned. Local and CI databases are disposable coursework fixtures.

@@ -114,4 +114,50 @@ public partial class RaceDayApiTests
         await AssertStatus(response, HttpStatusCode.OK);
         Assert.Equal(System.Text.Json.JsonValueKind.Null, (await ReadJson(response)).GetProperty("profilePictureUrl").ValueKind);
     }
+    [Fact]
+    public async Task ProtectedRoutes_RejectAnonymousAndOppositeRoleRequests()
+    {
+        var anonymous = CreateClient();
+        foreach (var path in new[] { "/api/users/me", "/api/events/managed", "/api/enrolments/me", "/api/results/me", "/api/events/1/enrolments", "/api/events/1/results" })
+            await AssertStatus(await anonymous.GetAsync(path), HttpStatusCode.Unauthorized);
+
+        var participant = await RegisterAndLogin("Participant");
+        foreach (var (method, path) in new[]
+        {
+            (HttpMethod.Post, "/api/events"), (HttpMethod.Put, "/api/events/1"), (HttpMethod.Delete, "/api/events/1"),
+            (HttpMethod.Post, "/api/events/1/categories"), (HttpMethod.Put, "/api/categories/1"), (HttpMethod.Delete, "/api/categories/1"),
+            (HttpMethod.Post, "/api/enrolments/1/result"), (HttpMethod.Put, "/api/results/1"),
+            (HttpMethod.Get, "/api/events/1/enrolments"), (HttpMethod.Get, "/api/events/1/results")
+        })
+        {
+            using var request = new HttpRequestMessage(method, path);
+            if (method == HttpMethod.Post || method == HttpMethod.Put) request.Content = JsonContent.Create(new { });
+            await AssertStatus(await participant.SendAsync(request), HttpStatusCode.Forbidden);
+        }
+        using var image = Image(Png);
+        await AssertStatus(await participant.PostAsync("/api/events/1/images", image), HttpStatusCode.Forbidden);
+
+        var organiser = await RegisterAndLogin("Organiser");
+        foreach (var path in new[] { "/api/enrolments/me", "/api/results/me", "/api/enrolments/1" })
+            await AssertStatus(await organiser.GetAsync(path), HttpStatusCode.Forbidden);
+    }
+    [Fact]
+    public async Task Ownership_PreventsCrossOrganiserCategoriesEnrolmentsAndResults()
+    {
+        var owner = await RegisterAndLogin("Organiser");
+        var outsider = await RegisterAndLogin("Organiser");
+        var (eventId, categoryId) = await CreateEventWithCategory(owner);
+        var enrolmentId = await Enrol(eventId, categoryId);
+        await AssertStatus(await outsider.PostAsJsonAsync($"/api/events/{eventId}/categories", new { categoryName = "Other", categoryDistanceKm = 5 }), HttpStatusCode.Forbidden);
+        await AssertStatus(await outsider.PutAsJsonAsync($"/api/categories/{categoryId}", new { categoryName = "Other", categoryDistanceKm = 5 }), HttpStatusCode.Forbidden);
+        await AssertStatus(await outsider.DeleteAsync($"/api/categories/{categoryId}"), HttpStatusCode.Forbidden);
+        await AssertStatus(await outsider.GetAsync($"/api/events/{eventId}/enrolments"), HttpStatusCode.Forbidden);
+        await AssertStatus(await outsider.GetAsync($"/api/events/{eventId}/results"), HttpStatusCode.Forbidden);
+        await FinishEvent(owner, eventId);
+        await AssertStatus(await outsider.PostAsJsonAsync($"/api/enrolments/{enrolmentId}/result", new { finishTime = "00:45:00", finishPosition = 1 }), HttpStatusCode.Forbidden);
+        var published = await owner.PostAsJsonAsync($"/api/enrolments/{enrolmentId}/result", new { finishTime = "00:45:00", finishPosition = 1 });
+        await AssertStatus(published, HttpStatusCode.Created);
+        var resultId = (await ReadJson(published)).GetProperty("resultId").GetInt32();
+        await AssertStatus(await outsider.PutAsJsonAsync($"/api/results/{resultId}", new { finishTime = "00:44:00", finishPosition = 1 }), HttpStatusCode.Forbidden);
+    }
 }
