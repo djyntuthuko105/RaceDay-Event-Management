@@ -93,7 +93,17 @@ public class ResultsController : ControllerBase
             .OrderByDescending(result => result.RecordedAt)
             .ToListAsync(cancellationToken);
 
-        return Ok(results.Select(Responses.Result));
+        var eventIds = results.Select(result => result.Enrolment.EventId).Distinct().ToList();
+        var counts = await _db.Results.Where(result => eventIds.Contains(result.Enrolment.EventId))
+            .GroupBy(result => result.Enrolment.EventId)
+            .Select(group => new { EventId = group.Key, Count = group.Count() })
+            .ToDictionaryAsync(group => group.EventId, group => group.Count, cancellationToken);
+        return Ok(results.Select(result =>
+        {
+            var response = Responses.Result(result);
+            response.TotalFinishers = counts.GetValueOrDefault(response.EventId);
+            return response;
+        }));
     }
 
     /// <summary>
@@ -148,7 +158,17 @@ public class ResultsController : ControllerBase
             .OrderBy(result => result.FinishPosition)
             .ToListAsync(cancellationToken);
 
-        return Ok(results.Select(Responses.Result));
+        var eventIds = results.Select(result => result.Enrolment.EventId).Distinct().ToList();
+        var counts = await _db.Results.Where(result => eventIds.Contains(result.Enrolment.EventId))
+            .GroupBy(result => result.Enrolment.EventId)
+            .Select(group => new { EventId = group.Key, Count = group.Count() })
+            .ToDictionaryAsync(group => group.EventId, group => group.Count, cancellationToken);
+        return Ok(results.Select(result =>
+        {
+            var response = Responses.Result(result);
+            response.TotalFinishers = counts.GetValueOrDefault(response.EventId);
+            return response;
+        }));
     }
 
     /// <summary>

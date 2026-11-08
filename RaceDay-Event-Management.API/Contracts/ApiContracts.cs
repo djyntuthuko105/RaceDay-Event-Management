@@ -283,6 +283,9 @@ public class ResultWriteRequest
 
 public class ResultResponse
 {
+    public DateOnly EventDate { get; set; }
+    public int TotalFinishers { get; set; }
+
     public int ResultId { get; set; }
 
     public int EnrolmentId { get; set; }

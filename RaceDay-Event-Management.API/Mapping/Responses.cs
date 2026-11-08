@@ -115,6 +115,7 @@ public static class Responses
     public static ResultResponse Result(Result result) => new()
     {
         ResultId = result.ResultId,
+        EventDate = result.Enrolment?.Event?.EventDate ?? default,
         EnrolmentId = result.EnrolmentId,
         EventId = result.Enrolment?.EventId ?? 0,
         EventName = result.Enrolment?.Event?.EventName ?? string.Empty,

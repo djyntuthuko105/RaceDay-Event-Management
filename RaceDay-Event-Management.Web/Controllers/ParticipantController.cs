@@ -7,6 +7,7 @@ namespace RaceDay.Web.Controllers;
 public class ParticipantController(RaceDayApi api) : Controller
 {
     public async Task<IActionResult> Events() => View(await api.GetAsync<List<EnrolmentResponse>>("api/enrolments/me"));
+    public async Task<IActionResult> Results() => View(await api.GetAsync<List<ResultResponse>>("api/results/me"));
     [HttpPost]
     public async Task<IActionResult> Cancel(int id)
     {
